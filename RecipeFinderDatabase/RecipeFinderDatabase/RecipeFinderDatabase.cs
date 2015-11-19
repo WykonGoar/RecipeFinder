@@ -1,0 +1,254 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using RecipeFinderDatabase.Models;
+using System.Data.SqlClient;
+using System.Data.OleDb;
+
+namespace RecipeFinderDatabase
+{
+    public partial class RecipeFinderDatabase : Form
+    {
+        private DatabaseConnection mDatabaseConnection;
+        private int currentRecipeId = -1;
+
+        public RecipeFinderDatabase()
+        {
+            InitializeComponent();
+
+            mDatabaseConnection = new DatabaseConnection();
+
+            lbIngredients.DisplayMember = "Name";
+            lbRecipes.DisplayMember = "Title";
+            ReloadRecipes();
+        }
+
+        public void ReloadRecipes(){
+            List<Recipe> mRecipes = mDatabaseConnection.GetAllRecipes();
+            lbRecipes.Items.Clear();
+            lbRecipes.Items.AddRange(mRecipes.ToArray());
+
+            if (currentRecipeId != -1)
+            {
+                lbIngredients.Items.Clear();
+                foreach(Recipe recipe in mRecipes)
+                {
+                    if (recipe.Id == currentRecipeId)
+                        lbIngredients.Items.AddRange(recipe.Ingredients.ToArray());
+                }
+            }
+        }
+
+        private void lbRecipes_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Recipe selectedRecipe = (Recipe)lbRecipes.SelectedItem;
+
+            if (selectedRecipe == null)
+                return;
+
+            lRecipeTitle.Text = selectedRecipe.Title;
+            tbTitle.Text = selectedRecipe.Title;
+            tbBook.Text = selectedRecipe.Book;
+            nudPage.Value = selectedRecipe.Page;
+            tbKitchen.Text = selectedRecipe.Kitchen;
+            cbbCourse.Text = selectedRecipe.Course;
+            nudMaxPreperationTime.Value = selectedRecipe.MaxPreperationTime;
+            nudPersons.Value = selectedRecipe.Persons;
+            cbFavorite.Checked = selectedRecipe.Favorite;
+            cbLacoseFree.Checked = selectedRecipe.LactoseFree;
+            cbGlutenFree.Checked = selectedRecipe.GlutenFree;
+            cbHide.Checked = selectedRecipe.Hide;
+
+            lbIngredients.Items.Clear();
+            lbIngredients.Items.AddRange(selectedRecipe.Ingredients.ToArray());
+
+            currentRecipeId = selectedRecipe.Id;
+            tcEditor.Enabled = true;
+        }
+
+        private void lbIngredients_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Ingredient selectedIngredient = (Ingredient) lbIngredients.SelectedItem;
+
+            if (selectedIngredient == null)
+                return;
+
+            tbName.Text = selectedIngredient.Name;
+            tbAmount.Text = selectedIngredient.Amount;
+            tbMeasure.Text = selectedIngredient.Measure;
+
+            tbName.Enabled = true;
+            tbAmount.Enabled = true;
+            tbMeasure.Enabled = true;
+            bSaveIngredient.Enabled = true;
+        }
+
+        private void bSaveRecipe_Click(object sender, EventArgs e)
+        {
+            Recipe selectedRecipe = (Recipe)lbRecipes.SelectedItem;
+
+            selectedRecipe.Title = tbTitle.Text;
+            selectedRecipe.Book = tbBook.Text;
+            selectedRecipe.Page = (int)nudPage.Value;
+            selectedRecipe.Kitchen = tbKitchen.Text;
+            selectedRecipe.Course = cbbCourse.Text;
+            selectedRecipe.MaxPreperationTime = (int)nudMaxPreperationTime.Value;
+            selectedRecipe.Persons = (int)nudPersons.Value;
+            selectedRecipe.Favorite = cbFavorite.Checked;
+            selectedRecipe.LactoseFree = cbLacoseFree.Checked;
+            selectedRecipe.GlutenFree = cbGlutenFree.Checked;
+            selectedRecipe.Hide = cbHide.Checked;
+
+            bool successful = true;
+            try
+            {
+                successful = mDatabaseConnection.ExecuteNonReturnQuery(selectedRecipe.GetUpdateQuery());
+            }
+            catch (SqlException ex)
+            {
+                successful = false;
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            if(successful)
+                MessageBox.Show("Het recept is aangepast.", "Aanpassing gelukt.");
+        }
+
+        private void bSaveIngredient_Click(object sender, EventArgs e)
+        {
+            Ingredient selectedIngredient = (Ingredient)lbIngredients.SelectedItem;
+
+            selectedIngredient.Name = tbName.Text;
+            selectedIngredient.Amount = tbAmount.Text;
+            selectedIngredient.Measure = tbMeasure.Text;
+
+            bool successful = true;
+            try
+            {
+                successful = mDatabaseConnection.ExecuteNonReturnQuery(selectedIngredient.GetUpdateQuery());
+            }
+            catch (SqlException ex)
+            {
+                successful = false;
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (successful)
+                MessageBox.Show("Het recept is aangepast.", "Aanpassing gelukt.");
+        }
+
+        private void bNewIngredient_Click(object sender, EventArgs e)
+        {
+            NewIngredient newIngredientForm = new NewIngredient(this, currentRecipeId);
+            newIngredientForm.ShowDialog();
+        }
+
+        private void bDeleteIngredient_Click(object sender, EventArgs e)
+        {
+            Ingredient selectedIngredient = (Ingredient)lbIngredients.SelectedItem;
+            OleDbCommand[] commands = selectedIngredient.GetDeleteQuerys();
+            
+            try
+            {
+                bool successfull1 = mDatabaseConnection.ExecuteNonReturnQuery(commands[0]);
+                if (successfull1)
+                {
+                    bool successfull2 = mDatabaseConnection.ExecuteNonReturnQuery(commands[1]);
+                    if (successfull2)
+                    {
+                        MessageBox.Show("Het ingredient is verwijderd.", "Verwijderen gelukt.");
+
+                        tbName.Text = String.Empty;
+                        tbAmount.Text = String.Empty;
+                        tbMeasure.Text = String.Empty;
+
+                        tbName.Enabled = false;
+                        tbAmount.Enabled = false;
+                        tbMeasure.Enabled = false;
+                        bSaveIngredient.Enabled = false;
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            ReloadRecipes();
+        }
+
+        private void bDeleteRecipe_Click(object sender, EventArgs e)
+        {
+            Recipe selectedRecipe = (Recipe)lbRecipes.SelectedItem;
+            OleDbCommand[] commands = selectedRecipe.GetDeleteQuerys();
+            
+            try
+            {
+                bool successfull1 = mDatabaseConnection.ExecuteNonReturnQuery(commands[0]);
+
+                if (successfull1)
+                {
+                    bool successfull2 = mDatabaseConnection.ExecuteNonReturnQuery(commands[1]);
+                    if (successfull2)
+                    {
+                        ReloadRecipes();
+                        ClearRecipeValues();
+                        currentRecipeId = -1;
+                        MessageBox.Show("Het recept is verwijderd.", "Verwijderen gelukt.");
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ClearRecipeValues()
+        {
+            lRecipeTitle.Text = "";
+            tbTitle.Text = "";
+            tbBook.Text = "";
+            nudPage.Value = 0;
+            tbKitchen.Text = "";
+            cbbCourse.Text = "";
+            nudMaxPreperationTime.Value = 0;
+            nudPersons.Value = 1;
+            cbFavorite.Checked = false;
+            cbLacoseFree.Checked = false;
+            cbGlutenFree.Checked = false;
+            cbHide.Checked = false;
+
+            lbIngredients.Items.Clear();
+            tcEditor.Enabled = false;
+        }
+
+
+        private void bNewRecipe_Click(object sender, EventArgs e)
+        {
+            NewRecipe newRecipeForm = new NewRecipe(this);
+            newRecipeForm.ShowDialog();
+        }
+
+        private void importeerReceptenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IORecipes mIORecipes = new IORecipes();
+            bool succesfull = mIORecipes.ImportRecipes();
+            if (succesfull)
+                MessageBox.Show("De recepten zijn geïmporteerd.", "Importeren gelukt.");
+        }
+
+        private void exporteerReceptenToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            IORecipes mIORecipes = new IORecipes();
+            bool succesfull = mIORecipes.ExportRecipes();
+            if(succesfull)
+                MessageBox.Show("De recepten zijn geëxporteerd.", "Exporteren gelukt.");
+        }
+    }
+}

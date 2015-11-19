@@ -1,0 +1,61 @@
+<resources>
+    <string name="app_name">Recipe Finder</string>
+    <string name="menu">Menu</string>
+
+    <string name="action_settings">Settings</string>
+
+    <string name="drawer_open">Slider Menu Opened</string>
+    <string name="drawer_close">Slider Menu Closed</string>
+
+    <string-array name="navigation_titles">
+        <item>Recepten</item>
+        <item>Favorieten</item>
+        <item>Zoeken</item>
+        <item>Willekeurig</item>
+        <item>Verborgen</item>
+        <item>Importeer recepten</item>
+        <item>Exporteer recepten</item>
+    </string-array>
+    <array name="navigation_icons">
+        <item>@drawable/coockhat_icon</item>
+        <item>@drawable/favorite_icon</item>
+        <item>@drawable/search_icon</item>
+        <item>@drawable/random_icon</item>
+        <item>@drawable/hidden_icon</item>
+        <item>@drawable/import_icon</item>
+        <item>@drawable/export_icon</item>
+    </array>
+    <string-array name="cbbAllYesNo">
+        <item>Alle</item>
+        <item>Ja</item>
+        <item>Nee</item>
+    </string-array>
+
+    <string name="title_activity_favorite">FavoriteActivity</string>
+
+    <string name="hide_warning">Recept verbergen?</string>
+    <string name="unhide_warning">Recept weergeven?</string>
+    <string name="cancel">Annuleren</string>
+    <string name="hide">Verbergen</string>
+    <string name="unhide">Weergeven</string>
+
+    <string name="search">Zoeken</string>
+    <string name="order">Ordenen</string>
+    <string name="random">Willekeurig</string>
+
+    <string name="radioGroupOrderBy">Ordenen op</string>
+    <string name="radioGroupIncreaseDecrease">Oplopend/Aflopend</string>
+    <string name="radioTitle">Titel</string>
+    <string name="radioKitchen">Keuken</string>
+    <string name="radioCourse">Gerecht</string>
+    <string name="radioMaxPreperationTime">Tijd</string>
+    <string name="radioIncrease">Oplopend</string>
+    <string name="radioDecrease">Aflopend</string>
+
+    <string name="glutenFree">Gluten vrij</string>
+    <string name="lactoseFree">Lactose vrij</string>
+    <string name="favorite">Favoriet</string>
+
+    <string name="cbbAllValue">Alle</string>
+
+</resources>
