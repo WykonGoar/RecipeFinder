@@ -30,7 +30,7 @@ CREATE TABLE [dbo].[ingredients] (
 	ON DELETE CASCADE
 );
 
-CREATE TABLE [dbo].[allergiesfree] (
+CREATE TABLE [dbo].[allergies] (
     [_id]      INT          IDENTITY (1, 1) NOT NULL,
     [name] INT          NOT NULL,
     PRIMARY KEY CLUSTERED ([_id] ASC)
@@ -90,9 +90,9 @@ INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Suiker','','')
 INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Peper','','');
 INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Zout','','');
 
-INSERT INTO allergiesfree (name) VALUES ('Lactose');
-INSERT INTO allergiesfree (name) VALUES ('Gluten');
-INSERT INTO allergiesfree (name) VALUES ('Noten');
+INSERT INTO allergies (name) VALUES ('Lactose');
+INSERT INTO allergies (name) VALUES ('Gluten');
+INSERT INTO allergies (name) VALUES ('Noten');
 
 INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (1, 1);
 INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (2, 2);
