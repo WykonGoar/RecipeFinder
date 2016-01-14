@@ -1,4 +1,6 @@
 
+DROP TABLE allergiesrecipes;
+DROP TABLE allergiesfree;
 DROP TABLE ingredients;
 DROP TABLE recipes;
 DROP TABLE deletedvalues;
@@ -8,13 +10,11 @@ CREATE TABLE [dbo].[recipes] (
     [book]               VARCHAR (255) NOT NULL,
     [page]               INT           NOT NULL,
     [kitchen]            VARCHAR (255) NOT NULL,
-    [course]             VARCHAR (50)  NOT NULL,
+    [course]             VARCHAR (255)  NOT NULL,
     [title]              VARCHAR (255) NOT NULL,
     [maxPreperationTime] INT           NOT NULL,
     [persons]            INT           NOT NULL,
     [favorite]           INT           NOT NULL,
-    [lactosefree]        INT           NOT NULL,
-    [glutenfree]         INT           NOT NULL,
     [hide]               INT           NOT NULL,
     PRIMARY KEY CLUSTERED ([_id] ASC)
 );
@@ -22,53 +22,78 @@ CREATE TABLE [dbo].[recipes] (
 CREATE TABLE [dbo].[ingredients] (
     [_id]      INT          IDENTITY (1, 1) NOT NULL,
     [recipeId] INT          NOT NULL,
-    [name]     VARCHAR (50) NOT NULL,
-    [amount]   VARCHAR (50) NOT NULL,
-    [measure]  VARCHAR (50) NOT NULL,
+    [name]     VARCHAR (255) NOT NULL,
+    [amount]   VARCHAR (255),
+    [measure]  VARCHAR (255),
     PRIMARY KEY CLUSTERED ([_id] ASC),
     CONSTRAINT [fkRecipeId] FOREIGN KEY ([recipeId]) REFERENCES [dbo].[recipes] ([_id])
 	ON DELETE CASCADE
 );
 
+CREATE TABLE [dbo].[allergiesfree] (
+    [_id]      INT          IDENTITY (1, 1) NOT NULL,
+    [name] INT          NOT NULL,
+    PRIMARY KEY CLUSTERED ([_id] ASC)
+);
+
+CREATE TABLE [dbo].[allergiesrecipes] (
+    [_id]      INT          IDENTITY (1, 1) NOT NULL,
+    [recipeId] INT          NOT NULL,
+    [allergyId] INT          NOT NULL,
+    PRIMARY KEY CLUSTERED ([_id] ASC)
+    CONSTRAINT [fkRecipeId] FOREIGN KEY ([recipeId]) REFERENCES [dbo].[recipes] ([_id])
+	ON DELETE CASCADE
+    CONSTRAINT [fkAllergieId] FOREIGN KEY ([allergyId]) REFERENCES [dbo].[allergiesfree] ([_id])
+	ON DELETE CASCADE
+);
+
 CREATE TABLE [dbo].[deletedvalues] (
-    [Id]                 INT IDENTITY (1, 1) NOT NULL,
+    [_id]                 INT IDENTITY (1, 1) NOT NULL,
     [recipeIngredientId] INT NOT NULL,
     [isRecipe]           INT NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 
 
-INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,lactosefree,glutenfree,hide) VALUES ('Smulweb',1,'Italiaans','Hoofdgerecht','Lasange',100, 4, 0, 0, 0, 0);
-INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,lactosefree,glutenfree,hide) VALUES ('Smulweb',5,'Frans','Voorgerecht','Avocadobavarois en garnalentartaar als amuze of voorafje',30,4, 0, 0, 0, 0);
-INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,lactosefree,glutenfree,hide) VALUES ('Smulweb',125,'Geen keuken','Nagerecht','Warm Chocoladetaartje',30,4, 0, 0, 0, 0);
+INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,hide) VALUES ('Smulweb',1,'Italiaans','Hoofdgerecht','Lasange',100, 4, 0, 0);
+INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,hide) VALUES ('Smulweb',5,'Frans','Voorgerecht','Avocadobavarois en garnalentartaar als amuze of voorafje',30,4, 0, 0);
+INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,hide) VALUES ('Smulweb',125,'Geen keuken','Nagerecht','Warm Chocoladetaartje',30,4, 0, 0);
 
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (3,'Ei',2,'');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (3,'Suiker',25,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (3,'Pure chocolade',100,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (3,'Boter',30,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (3,'Bloem',30,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (3,'Poedersuiker','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (2,'Avocado',2,'');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (2,'Sap van citroen',1,'citroen');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (2,'Tabasco','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (2,'Room',120,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (2,'Gekookte garnalen',6,'garnalen');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (2,'Zalmeitjes','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Ui','0.5 - 1','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Knoflook',3,'teentjes');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Rundergehakt',500,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Italiaanse kruiden','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Laurierblaadje',1,'');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Sambal','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Tomatenpuree',3,'kleine blikjes');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Gepelde tomaten stukjes',1,'blik');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Gezeefde tomaten',1,'pakje');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Voorgekookte lasagnevellen',1,'pak');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Olijfolie','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Mozzarella',2,'bolletjes');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Boter',50,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Bloem',50,'gr');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Koude melk',500,'ml');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Suiker','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Peper','','');
-INSERT INTO ingredients (recipeID,name,amount,measure) VALUES (1,'Zout','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (3,'Ei',2,'');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (3,'Suiker',25,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (3,'Pure chocolade',100,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (3,'Boter',30,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (3,'Bloem',30,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (3,'Poedersuiker','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (2,'Avocado',2,'');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (2,'Sap van citroen',1,'citroen');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (2,'Tabasco','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (2,'Room',120,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (2,'Gekookte garnalen',6,'garnalen');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (2,'Zalmeitjes','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Ui','0.5 - 1','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Knoflook',3,'teentjes');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Rundergehakt',500,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Italiaanse kruiden','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Laurierblaadje',1,'');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Sambal','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Tomatenpuree',3,'kleine blikjes');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Gepelde tomaten stukjes',1,'blik');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Gezeefde tomaten',1,'pakje');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Voorgekookte lasagnevellen',1,'pak');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Olijfolie','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Mozzarella',2,'bolletjes');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Boter',50,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Bloem',50,'gr');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Koude melk',500,'ml');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Suiker','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Peper','','');
+INSERT INTO ingredients (recipeId,name,amount,measure) VALUES (1,'Zout','','');
+
+INSERT INTO allergiesfree (name) VALUES ('Lactose');
+INSERT INTO allergiesfree (name) VALUES ('Gluten');
+INSERT INTO allergiesfree (name) VALUES ('Noten');
+
+INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (1, 1);
+INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (2, 2);
+INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (3, 3);
