@@ -20,10 +20,9 @@ namespace RecipeFinderDatabase.Models
         private int mMaxPreperationTime;
         private int mPersons;
         private bool mFavorite;
-        private bool mLactoseFree;
-        private bool mGlutenFree;
         private bool mHide;
         private List<Ingredient> mIngredients;
+        private List<AllergiesRecipes> mAllergies;
 
         public Recipe()
         { }
@@ -55,44 +54,6 @@ namespace RecipeFinderDatabase.Models
                     mFavorite = false;
             }
         }
-        public bool LactoseFree { get { return mLactoseFree; } set { mLactoseFree = value; } }
-        public int LactoseFreeInt
-        {
-            get
-            {
-                int lactose = 0;
-                if (mLactoseFree)
-                    lactose = 1;
-
-                return lactose;
-            }
-            set
-            {
-                if (value == 1)
-                    mLactoseFree = true;
-                else
-                    mLactoseFree = false;
-            }
-        }
-        public bool GlutenFree { get { return mGlutenFree; } set { mGlutenFree = value; } }
-        public int GlutenFreeInt
-        {
-            get
-            {
-                int gluten = 0;
-                if (mGlutenFree)
-                    gluten = 1;
-
-                return gluten;
-            }
-            set
-            {
-                if (value == 1)
-                    mGlutenFree = true;
-                else
-                    mGlutenFree = false;
-            }
-        }
         public bool Hide { get { return mHide; } set { mHide = value; } }
         public int HideInt
         {
@@ -114,9 +75,11 @@ namespace RecipeFinderDatabase.Models
         }
         public List<Ingredient> Ingredients { get { return mIngredients; } set { mIngredients = value; } }
 
+        public List<AllergiesRecipes> Allergies { get { return mAllergies; } set { mAllergies = value; } }
+
         public OleDbCommand GetUpdateQuery()
         {
-            string query = "UPDATE recipes SET book = @book, page = @page, kitchen = @kitchen, course = @course, title = @title, maxPreperationTime = @time, persons = @persons, favorite = @favorite, lactosefree = @lactose, glutenfree = @gluten, hide = @hide WHERE id = @id;";
+            string query = "UPDATE recipes SET book = @book, page = @page, kitchen = @kitchen, course = @course, title = @title, maxPreperationTime = @time, persons = @persons, favorite = @favorite, hide = @hide WHERE id = @id;";
             OleDbCommand command = new OleDbCommand(query);
             command.Parameters.AddWithValue("@book", mBook);
             command.Parameters.AddWithValue("@page", mPage);
@@ -126,8 +89,6 @@ namespace RecipeFinderDatabase.Models
             command.Parameters.AddWithValue("@time", mMaxPreperationTime);
             command.Parameters.AddWithValue("@persons", mPersons);
             command.Parameters.AddWithValue("@favorite", FavoriteInt);
-            command.Parameters.AddWithValue("@lactose", LactoseFreeInt);
-            command.Parameters.AddWithValue("@gluten", GlutenFreeInt);
             command.Parameters.AddWithValue("@hide", HideInt);
             command.Parameters.AddWithValue("@id", mId);
 
@@ -136,7 +97,7 @@ namespace RecipeFinderDatabase.Models
 
         public OleDbCommand GetInsertQuery()
         {
-            string query = "INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,lactosefree,glutenfree,hide) VALUES (@P0, @P1, @P2, @P3, @P4, @P5, @P6, @P7, @P8, @P9, @P10);";
+            string query = "INSERT INTO recipes (book,page,kitchen,course,title,maxPreperationTime,persons,favorite,hide) VALUES (@P0, @P1, @P2, @P3, @P4, @P5, @P6, @P7, @P8);";
             OleDbCommand command = new OleDbCommand(query);
             command.Parameters.AddWithValue("@P0", mBook);
             command.Parameters.AddWithValue("@P1", mPage);
@@ -146,9 +107,7 @@ namespace RecipeFinderDatabase.Models
             command.Parameters.AddWithValue("@P5", mMaxPreperationTime);
             command.Parameters.AddWithValue("@P6", mPersons);
             command.Parameters.AddWithValue("@P7", FavoriteInt);
-            command.Parameters.AddWithValue("@P8", LactoseFreeInt);
-            command.Parameters.AddWithValue("@P9", GlutenFreeInt);
-            command.Parameters.AddWithValue("@P10", HideInt);
+            command.Parameters.AddWithValue("@P8", HideInt);
 
             return command;
         }
@@ -157,9 +116,10 @@ namespace RecipeFinderDatabase.Models
         {
             OleDbCommand[] commands = new OleDbCommand[2];
 
-            string deletedValuesCommandQuery = "INSERT INTO DeletedValues (recipeIngredientId, isRecipe) VALUES (@P0, 1);";
+            string deletedValuesCommandQuery = "INSERT INTO DeletedValues (objectId, objectType) VALUES (@P0, @P1);";
             OleDbCommand deletedValuesCommand = new OleDbCommand(deletedValuesCommandQuery);
             deletedValuesCommand.Parameters.AddWithValue("@P0", mId);
+            deletedValuesCommand.Parameters.AddWithValue("@P1", ObjectType.Recipe);
             commands[0] = deletedValuesCommand;
 
             string deleteQuery = "DELETE FROM recipes WHERE id = @P0";
@@ -172,7 +132,7 @@ namespace RecipeFinderDatabase.Models
     
         public String GetExportString()
         {
-            string query = "INSERT INTO recipes (id, book,page,kitchen,course,title,maxPreperationTime,persons,favorite,lactosefree,glutenfree,hide) VALUES (@id, @book, @page, @kitchen, @course, @title, @time, @persons, @favorite, @lactosefree, @glutenfree, @hide);";
+            string query = "INSERT INTO recipes (id, book,page,kitchen,course,title,maxPreperationTime,persons,favorite,hide) VALUES (@id, @book, @page, @kitchen, @course, @title, @time, @persons, @favorite, @hide);";
             OleDbCommand command = new OleDbCommand(query);
             command.Parameters.AddWithValue("@id", mId);
             command.Parameters.AddWithValue("@book", mBook);
@@ -183,8 +143,6 @@ namespace RecipeFinderDatabase.Models
             command.Parameters.AddWithValue("@time", mMaxPreperationTime);
             command.Parameters.AddWithValue("@persons", mPersons);
             command.Parameters.AddWithValue("@favorite", FavoriteInt);
-            command.Parameters.AddWithValue("@lactosefree", LactoseFreeInt);
-            command.Parameters.AddWithValue("@glutenfree", GlutenFreeInt);
             command.Parameters.AddWithValue("@hide", HideInt);
 
             foreach(OleDbParameter parameter in command.Parameters)

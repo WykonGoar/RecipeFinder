@@ -3,49 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
 using System.Data.OleDb;
-using System.Data;
 
 namespace RecipeFinderDatabase.Models
 {
-    public class Ingredient
+    public class AllergiesRecipes
     {
         private int mId;
         private int mRecipeId;
+        private int mAllergyId;
         private string mName;
-        private string mAmount;
-        private string mMeasure;
 
-        public Ingredient() { }
+        public AllergiesRecipes() { }
 
         public int Id { get { return mId; } set { mId = value; } }
         public int RecipeId { get { return mRecipeId; } set { mRecipeId = value; } }
+        public int AllergyId { get { return mAllergyId; } set { mAllergyId = value; } }
         public string Name { get { return mName; } set { mName = value; } }
-        public string Amount { get { return mAmount; } set { mAmount = value; } }
-        public string Measure { get { return mMeasure; } set { mMeasure = value; } }
-
-        public OleDbCommand GetUpdateQuery()
-        {
-            string query = "UPDATE ingredients SET recipeId = @P0, name = @P1, amount = @P2, measure = @P3 WHERE id = @P4;";
-            OleDbCommand command = new OleDbCommand(query);
-            command.Parameters.AddWithValue("@P0", mRecipeId);
-            command.Parameters.AddWithValue("@P1", mName);
-            command.Parameters.AddWithValue("@P2", mAmount);
-            command.Parameters.AddWithValue("@P3", mMeasure);
-            command.Parameters.AddWithValue("@P4", mId);
-
-            return command;
-        }
 
         public OleDbCommand GetInsertQuery()
         {
-            string query = "INSERT INTO ingredients (recipeId, name, amount, measure) VALUES (@P0, @P1, @P2, @P3);";
+            string query = "INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (@P0, @P1);";
             OleDbCommand command = new OleDbCommand(query);
             command.Parameters.AddWithValue("@P0", mRecipeId);
-            command.Parameters.AddWithValue("@P1", mName);
-            command.Parameters.AddWithValue("@P2", mAmount);
-            command.Parameters.AddWithValue("@P3", mMeasure);
+            command.Parameters.AddWithValue("@P1", mAllergyId);
 
             return command;
         }
@@ -57,10 +38,10 @@ namespace RecipeFinderDatabase.Models
             string deletedValuesCommandQuery = "INSERT INTO DeletedValues (objectId, objectType) VALUES (@P0, @P1);";
             OleDbCommand deletedValuesCommand = new OleDbCommand(deletedValuesCommandQuery);
             deletedValuesCommand.Parameters.AddWithValue("@P0", mId);
-            deletedValuesCommand.Parameters.AddWithValue("@P1", ObjectType.Ingredient);
+            deletedValuesCommand.Parameters.AddWithValue("@P1", ObjectType.RecipeAllergy);
             commands[0] = deletedValuesCommand;
 
-            string deleteQuery = "DELETE FROM ingredients WHERE id = @P0;";
+            string deleteQuery = "DELETE FROM allergiesrecipes WHERE id = @P0";
             OleDbCommand deleteCommand = new OleDbCommand(deleteQuery);
             deleteCommand.Parameters.AddWithValue("@P0", mId);
             commands[1] = deleteCommand;
@@ -70,13 +51,10 @@ namespace RecipeFinderDatabase.Models
 
         public String GetExportString()
         {
-            string query = "INSERT INTO ingredients (id, recipeId, name, amount, measure) VALUES (@P0, @P1, @P2, @P3, @P4);";
+            string query = "INSERT INTO allergiesrecipes (recipeId, allergyId) VALUES (@recipe, @allergy);";
             OleDbCommand command = new OleDbCommand(query);
-            command.Parameters.AddWithValue("@P0", mId);
-            command.Parameters.AddWithValue("@P1", mRecipeId);
-            command.Parameters.AddWithValue("@P2", mName);
-            command.Parameters.AddWithValue("@P3", mAmount);
-            command.Parameters.AddWithValue("@P4", mMeasure);
+            command.Parameters.AddWithValue("@recipe", mRecipeId);
+            command.Parameters.AddWithValue("@allergy", mAllergyId);
 
             foreach (OleDbParameter parameter in command.Parameters)
             {

@@ -17,6 +17,7 @@ namespace RecipeFinderDatabase
     {
         private DatabaseConnection mDatabaseConnection;
         private int currentRecipeId = -1;
+        private List<Allergy> mAllergies;
 
         public RecipeFinderDatabase()
         {
@@ -25,8 +26,21 @@ namespace RecipeFinderDatabase
             mDatabaseConnection = new DatabaseConnection();
 
             lbIngredients.DisplayMember = "Name";
+            lbAllergies.DisplayMember = "Name";
+            lbAllergiesRecipes.DisplayMember = "Name";
+            cbbAllergy.DisplayMember = "Name";
             lbRecipes.DisplayMember = "Title";
+
             ReloadRecipes();
+            ReloadAllergies();
+        }
+
+        public void ReloadAllergies()
+        {
+            mAllergies = mDatabaseConnection.GetAllAllergies();
+
+            lbAllergies.Items.Clear();            
+            lbAllergies.Items.AddRange(mAllergies.ToArray());            
         }
 
         public void ReloadRecipes(){
@@ -40,9 +54,46 @@ namespace RecipeFinderDatabase
                 foreach(Recipe recipe in mRecipes)
                 {
                     if (recipe.Id == currentRecipeId)
+                    {
                         lbIngredients.Items.AddRange(recipe.Ingredients.ToArray());
+                        lbAllergiesRecipes.Items.AddRange(recipe.Allergies.ToArray());
+                    }
                 }
+
+                ReloadAllergiesRecipes();
             }
+        }
+
+        public void ReloadAllergiesRecipes()
+        {
+            List<Recipe> mRecipes = mDatabaseConnection.GetAllRecipes();
+
+            if (currentRecipeId != -1)
+            {
+                cbbAllergy.Items.Clear();
+                lbAllergiesRecipes.Items.Clear();
+                foreach(Recipe recipe in mRecipes)
+                {
+                    if (recipe.Id == currentRecipeId)
+                    {
+                        foreach(Allergy allergy in mAllergies)
+                        {
+                            bool noAllergy = true;
+                            foreach (AllergiesRecipes allergyRecipe in recipe.Allergies)
+                            {
+                                if (allergyRecipe.AllergyId == allergy.Id)
+                                {
+                                    noAllergy = false;
+                                    lbAllergiesRecipes.Items.Add(allergyRecipe);
+                                }
+                            }
+
+                            if (noAllergy)
+                                cbbAllergy.Items.Add(allergy);
+                        }
+                    }
+                }
+            }            
         }
 
         private void lbRecipes_SelectedIndexChanged(object sender, EventArgs e)
@@ -52,7 +103,6 @@ namespace RecipeFinderDatabase
             if (selectedRecipe == null)
                 return;
 
-            lRecipeTitle.Text = selectedRecipe.Title;
             tbTitle.Text = selectedRecipe.Title;
             tbBook.Text = selectedRecipe.Book;
             nudPage.Value = selectedRecipe.Page;
@@ -61,12 +111,12 @@ namespace RecipeFinderDatabase
             nudMaxPreperationTime.Value = selectedRecipe.MaxPreperationTime;
             nudPersons.Value = selectedRecipe.Persons;
             cbFavorite.Checked = selectedRecipe.Favorite;
-            cbLacoseFree.Checked = selectedRecipe.LactoseFree;
-            cbGlutenFree.Checked = selectedRecipe.GlutenFree;
             cbHide.Checked = selectedRecipe.Hide;
 
             lbIngredients.Items.Clear();
             lbIngredients.Items.AddRange(selectedRecipe.Ingredients.ToArray());
+
+            ReloadAllergiesRecipes();
 
             currentRecipeId = selectedRecipe.Id;
             tcEditor.Enabled = true;
@@ -101,8 +151,6 @@ namespace RecipeFinderDatabase
             selectedRecipe.MaxPreperationTime = (int)nudMaxPreperationTime.Value;
             selectedRecipe.Persons = (int)nudPersons.Value;
             selectedRecipe.Favorite = cbFavorite.Checked;
-            selectedRecipe.LactoseFree = cbLacoseFree.Checked;
-            selectedRecipe.GlutenFree = cbGlutenFree.Checked;
             selectedRecipe.Hide = cbHide.Checked;
 
             bool successful = true;
@@ -211,7 +259,6 @@ namespace RecipeFinderDatabase
 
         private void ClearRecipeValues()
         {
-            lRecipeTitle.Text = "";
             tbTitle.Text = "";
             tbBook.Text = "";
             nudPage.Value = 0;
@@ -220,8 +267,6 @@ namespace RecipeFinderDatabase
             nudMaxPreperationTime.Value = 0;
             nudPersons.Value = 1;
             cbFavorite.Checked = false;
-            cbLacoseFree.Checked = false;
-            cbGlutenFree.Checked = false;
             cbHide.Checked = false;
 
             lbIngredients.Items.Clear();
@@ -249,6 +294,86 @@ namespace RecipeFinderDatabase
             bool succesfull = mIORecipes.ExportRecipes();
             if(succesfull)
                 MessageBox.Show("De recepten zijn geëxporteerd.", "Exporteren gelukt.");
+        }
+
+        private void bAddAllergieRecipe_Click(object sender, EventArgs e)
+        {
+            Allergy allergy = (Allergy) cbbAllergy.SelectedItem;
+
+            AllergiesRecipes allergyRecipe = new AllergiesRecipes();
+            allergyRecipe.RecipeId = currentRecipeId;
+            allergyRecipe.AllergyId = allergy.Id;
+
+            bool successfull = true;
+            try
+            {
+                successfull = mDatabaseConnection.ExecuteNonReturnQuery(allergyRecipe.GetInsertQuery());
+            }
+            catch (SqlException ex)
+            {
+                successfull = false;
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (successfull)
+            {
+                ReloadAllergiesRecipes();
+            }
+        }
+
+        private void bDeleteRecipeAllergie_Click(object sender, EventArgs e)
+        {
+            AllergiesRecipes selectedAllergy = (AllergiesRecipes)lbAllergies.SelectedItem;
+            OleDbCommand[] commands = selectedAllergy.GetDeleteQuerys();
+
+            try
+            {
+                bool successfull1 = mDatabaseConnection.ExecuteNonReturnQuery(commands[0]);
+
+                if (successfull1)
+                {
+                    bool successfull2 = mDatabaseConnection.ExecuteNonReturnQuery(commands[1]);
+                    if (successfull2)
+                    {
+                        ReloadAllergiesRecipes();
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void bNewAllergy_Click(object sender, EventArgs e)
+        {
+            NewAllergy newAllergyForm = new NewAllergy(this);
+            newAllergyForm.ShowDialog();
+        }
+
+        private void bDeleteAllergy_Click(object sender, EventArgs e)
+        {
+            Allergy selectedAllergy = (Allergy)lbAllergies.SelectedItem;
+            OleDbCommand[] commands = selectedAllergy.GetDeleteQuerys();
+
+            try
+            {
+                bool successfull1 = mDatabaseConnection.ExecuteNonReturnQuery(commands[0]);
+
+                if (successfull1)
+                {
+                    bool successfull2 = mDatabaseConnection.ExecuteNonReturnQuery(commands[1]);
+                    if (successfull2)
+                    {
+                        ReloadAllergies();
+                        MessageBox.Show("Het allergy is verwijderd.", "Verwijderen gelukt.");
+                    }
+                }
+            }
+            catch (SqlException ex)
+            {
+                MessageBox.Show(ex.Message, "Error:" + ex.Number, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

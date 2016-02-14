@@ -47,6 +47,19 @@ namespace RecipeFinderDatabase.Models
                         string updateIngredientQuery = ingredient.GetExportString();
                         mStreamWriter.WriteLine(updateIngredientQuery);
                     }
+
+                    foreach (AllergiesRecipes allergy in recipe.Allergies)
+                    {
+                        string updateAllergyQuery = allergy.GetExportString();
+                        mStreamWriter.WriteLine(updateAllergyQuery);
+                    }
+                }
+
+                List<Allergy> allergyList = mDatabaseConnection.GetAllAllergies();
+                foreach(Allergy allergy in allergyList)
+                {
+                    string updateAllergyQuery = allergy.GetExportString();
+                    mStreamWriter.WriteLine(updateAllergyQuery);
                 }
 
                 foreach (DeletedValue deletedValue in deletedValueList)
@@ -93,7 +106,7 @@ namespace RecipeFinderDatabase.Models
                     if (!updated)
                     {
                         string insertQuery = String.Empty;
-
+                        
                         if(query.Contains("UPDATE recipes SET"))
                         {
                             insertQuery = "INSERT INTO recipes(";
@@ -101,13 +114,28 @@ namespace RecipeFinderDatabase.Models
 
                             insertQuery += ConvertUpdateToInsertQuery(query);
                         }
-                        else
+                        else if (query.Contains("UPDATE ingredients SET"))
                         {
                             insertQuery = "INSERT INTO ingredients(";
                             query = query.Replace("UPDATE ingredients SET ", String.Empty);
 
                             insertQuery += ConvertUpdateToInsertQuery(query);
                         }
+                        else if (query.Contains("UPDATE allergiesrecipes SET"))
+                        {
+                            insertQuery = "INSERT INTO allergiesrecipes(";
+                            query = query.Replace("UPDATE allergiesrecipes SET ", String.Empty);
+
+                            insertQuery += ConvertUpdateToInsertQuery(query);
+                        }
+                        else if (query.Contains("UPDATE allergies SET"))
+                        {
+                            insertQuery = "INSERT INTO allergies(";
+                            query = query.Replace("UPDATE allergies SET ", String.Empty);
+
+                            insertQuery += ConvertUpdateToInsertQuery(query);
+                        }
+
 
                         //SqlCommand newSqlCommand = new SqlCommand(insertQuery);
                         //mDatabaseConnection.ExecuteNonReturnQuery(newSqlCommand);
@@ -134,7 +162,7 @@ namespace RecipeFinderDatabase.Models
 
             updateQuery = updateQuery.Replace(idUpdateText, String.Empty);
 
-            string columnValues = "_id";
+            string columnValues = "id";
             string values = id;
 
             string[] updateBoxes = updateQuery.Split(',');

@@ -8,16 +8,17 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Data.SqlClient;
+
 using RecipeFinderDatabase.Models;
 
 namespace RecipeFinderDatabase
 {
-    public partial class NewRecipe : Form
+    public partial class NewAllergy : Form
     {
         private RecipeFinderDatabase mForm;
         private DatabaseConnection mDatabaseConnection;
 
-        public NewRecipe(RecipeFinderDatabase form)
+        public NewAllergy(RecipeFinderDatabase form)
         {
             InitializeComponent();
 
@@ -27,27 +28,14 @@ namespace RecipeFinderDatabase
 
         private void bAdd_Click(object sender, EventArgs e)
         {
-            Recipe mRecipe = new Recipe();
+            Allergy allergy = new Allergy();
 
-            mRecipe.Title = tbTitle.Text;
-            mRecipe.Book = tbBook.Text;
-            mRecipe.Page = (int)nudPage.Value;
-
-            if (tbKitchen.Text != String.Empty)
-                mRecipe.Kitchen = tbKitchen.Text;
-            else
-                mRecipe.Kitchen = "Geen keuken";
-
-            mRecipe.Course = cbbCourse.Text;
-            mRecipe.MaxPreperationTime = (int)nudMaxPreperationTime.Value;
-            mRecipe.Persons = (int)nudPersons.Value;
-            mRecipe.Favorite = cbFavorite.Checked;
-            mRecipe.Hide = cbHide.Checked;
+            allergy.Name = tbName.Text;
 
             bool successfull = true;
             try
             {
-                successfull = mDatabaseConnection.ExecuteNonReturnQuery(mRecipe.GetInsertQuery());
+                successfull = mDatabaseConnection.ExecuteNonReturnQuery(allergy.GetInsertQuery());
             }
             catch (SqlException ex)
             {
@@ -57,8 +45,8 @@ namespace RecipeFinderDatabase
 
             if (successfull)
             {
-                MessageBox.Show("Het recept is toegevoegd.", "Toevoegen gelukt.");
-                mForm.ReloadRecipes();
+                MessageBox.Show("Het allergy is toegevoegd.", "Toevoegen gelukt.");
+                mForm.ReloadAllergies();
                 this.Close();
             }
         }

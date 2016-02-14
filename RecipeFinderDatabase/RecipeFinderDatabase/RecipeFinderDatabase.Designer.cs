@@ -29,8 +29,6 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RecipeFinderDatabase));
-            this.lbRecipes = new System.Windows.Forms.ListBox();
-            this.lRecipes = new System.Windows.Forms.Label();
             this.tcEditor = new System.Windows.Forms.TabControl();
             this.tpRecipeEditor = new System.Windows.Forms.TabPage();
             this.bDeleteRecipe = new System.Windows.Forms.Button();
@@ -38,15 +36,11 @@
             this.bSaveRecipe = new System.Windows.Forms.Button();
             this.cbbCourse = new System.Windows.Forms.ComboBox();
             this.cbHide = new System.Windows.Forms.CheckBox();
-            this.cbGlutenFree = new System.Windows.Forms.CheckBox();
-            this.cbLacoseFree = new System.Windows.Forms.CheckBox();
             this.cbFavorite = new System.Windows.Forms.CheckBox();
             this.nudPersons = new System.Windows.Forms.NumericUpDown();
             this.nudMaxPreperationTime = new System.Windows.Forms.NumericUpDown();
             this.nudPage = new System.Windows.Forms.NumericUpDown();
             this.lHide = new System.Windows.Forms.Label();
-            this.lGlutenFree = new System.Windows.Forms.Label();
-            this.lLactoseFree = new System.Windows.Forms.Label();
             this.lFavorite = new System.Windows.Forms.Label();
             this.lPersons = new System.Windows.Forms.Label();
             this.lMazPreperationTime = new System.Windows.Forms.Label();
@@ -70,40 +64,38 @@
             this.lName = new System.Windows.Forms.Label();
             this.lIngredients = new System.Windows.Forms.Label();
             this.lbIngredients = new System.Windows.Forms.ListBox();
-            this.lRecipeTitle = new System.Windows.Forms.Label();
-            this.bNewRecipe = new System.Windows.Forms.Button();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.bDeleteRecipeAllergie = new System.Windows.Forms.Button();
+            this.bAddAllergieRecipe = new System.Windows.Forms.Button();
+            this.cbbAllergy = new System.Windows.Forms.ComboBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.lbAllergiesRecipes = new System.Windows.Forms.ListBox();
+            this.label2 = new System.Windows.Forms.Label();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.importeerReceptenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exporteerReceptenToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.bNewRecipe = new System.Windows.Forms.Button();
+            this.lRecipes = new System.Windows.Forms.Label();
+            this.lbRecipes = new System.Windows.Forms.ListBox();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.bDeleteAllergy = new System.Windows.Forms.Button();
+            this.bNewAllergy = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
+            this.lbAllergies = new System.Windows.Forms.ListBox();
             this.tcEditor.SuspendLayout();
             this.tpRecipeEditor.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudPersons)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudMaxPreperationTime)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPage)).BeginInit();
             this.tpIngredientEditor.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.menuStrip1.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lbRecipes
-            // 
-            this.lbRecipes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.lbRecipes.FormattingEnabled = true;
-            this.lbRecipes.HorizontalScrollbar = true;
-            this.lbRecipes.Location = new System.Drawing.Point(12, 43);
-            this.lbRecipes.Name = "lbRecipes";
-            this.lbRecipes.Size = new System.Drawing.Size(217, 303);
-            this.lbRecipes.TabIndex = 0;
-            this.lbRecipes.SelectedIndexChanged += new System.EventHandler(this.lbRecipes_SelectedIndexChanged);
-            // 
-            // lRecipes
-            // 
-            this.lRecipes.AutoSize = true;
-            this.lRecipes.Location = new System.Drawing.Point(12, 24);
-            this.lRecipes.Name = "lRecipes";
-            this.lRecipes.Size = new System.Drawing.Size(54, 13);
-            this.lRecipes.TabIndex = 1;
-            this.lRecipes.Text = "Recepten";
             // 
             // tcEditor
             // 
@@ -112,11 +104,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tcEditor.Controls.Add(this.tpRecipeEditor);
             this.tcEditor.Controls.Add(this.tpIngredientEditor);
+            this.tcEditor.Controls.Add(this.tabPage3);
             this.tcEditor.Enabled = false;
-            this.tcEditor.Location = new System.Drawing.Point(249, 43);
+            this.tcEditor.Location = new System.Drawing.Point(230, 24);
             this.tcEditor.Name = "tcEditor";
             this.tcEditor.SelectedIndex = 0;
-            this.tcEditor.Size = new System.Drawing.Size(375, 345);
+            this.tcEditor.Size = new System.Drawing.Size(375, 303);
             this.tcEditor.TabIndex = 2;
             // 
             // tpRecipeEditor
@@ -126,15 +119,11 @@
             this.tpRecipeEditor.Controls.Add(this.bSaveRecipe);
             this.tpRecipeEditor.Controls.Add(this.cbbCourse);
             this.tpRecipeEditor.Controls.Add(this.cbHide);
-            this.tpRecipeEditor.Controls.Add(this.cbGlutenFree);
-            this.tpRecipeEditor.Controls.Add(this.cbLacoseFree);
             this.tpRecipeEditor.Controls.Add(this.cbFavorite);
             this.tpRecipeEditor.Controls.Add(this.nudPersons);
             this.tpRecipeEditor.Controls.Add(this.nudMaxPreperationTime);
             this.tpRecipeEditor.Controls.Add(this.nudPage);
             this.tpRecipeEditor.Controls.Add(this.lHide);
-            this.tpRecipeEditor.Controls.Add(this.lGlutenFree);
-            this.tpRecipeEditor.Controls.Add(this.lLactoseFree);
             this.tpRecipeEditor.Controls.Add(this.lFavorite);
             this.tpRecipeEditor.Controls.Add(this.lPersons);
             this.tpRecipeEditor.Controls.Add(this.lMazPreperationTime);
@@ -149,7 +138,7 @@
             this.tpRecipeEditor.Location = new System.Drawing.Point(4, 22);
             this.tpRecipeEditor.Name = "tpRecipeEditor";
             this.tpRecipeEditor.Padding = new System.Windows.Forms.Padding(3);
-            this.tpRecipeEditor.Size = new System.Drawing.Size(367, 319);
+            this.tpRecipeEditor.Size = new System.Drawing.Size(367, 277);
             this.tpRecipeEditor.TabIndex = 0;
             this.tpRecipeEditor.Text = "Recept aanpassen";
             this.tpRecipeEditor.UseVisualStyleBackColor = true;
@@ -157,7 +146,7 @@
             // bDeleteRecipe
             // 
             this.bDeleteRecipe.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bDeleteRecipe.Location = new System.Drawing.Point(152, 289);
+            this.bDeleteRecipe.Location = new System.Drawing.Point(152, 247);
             this.bDeleteRecipe.Name = "bDeleteRecipe";
             this.bDeleteRecipe.Size = new System.Drawing.Size(75, 23);
             this.bDeleteRecipe.TabIndex = 48;
@@ -177,7 +166,7 @@
             // bSaveRecipe
             // 
             this.bSaveRecipe.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bSaveRecipe.Location = new System.Drawing.Point(286, 289);
+            this.bSaveRecipe.Location = new System.Drawing.Point(286, 247);
             this.bSaveRecipe.Name = "bSaveRecipe";
             this.bSaveRecipe.Size = new System.Drawing.Size(75, 23);
             this.bSaveRecipe.TabIndex = 46;
@@ -201,29 +190,11 @@
             // cbHide
             // 
             this.cbHide.AutoSize = true;
-            this.cbHide.Location = new System.Drawing.Point(90, 274);
+            this.cbHide.Location = new System.Drawing.Point(90, 221);
             this.cbHide.Name = "cbHide";
             this.cbHide.Size = new System.Drawing.Size(15, 14);
             this.cbHide.TabIndex = 44;
             this.cbHide.UseVisualStyleBackColor = true;
-            // 
-            // cbGlutenFree
-            // 
-            this.cbGlutenFree.AutoSize = true;
-            this.cbGlutenFree.Location = new System.Drawing.Point(90, 250);
-            this.cbGlutenFree.Name = "cbGlutenFree";
-            this.cbGlutenFree.Size = new System.Drawing.Size(15, 14);
-            this.cbGlutenFree.TabIndex = 43;
-            this.cbGlutenFree.UseVisualStyleBackColor = true;
-            // 
-            // cbLacoseFree
-            // 
-            this.cbLacoseFree.AutoSize = true;
-            this.cbLacoseFree.Location = new System.Drawing.Point(90, 224);
-            this.cbLacoseFree.Name = "cbLacoseFree";
-            this.cbLacoseFree.Size = new System.Drawing.Size(15, 14);
-            this.cbLacoseFree.TabIndex = 42;
-            this.cbLacoseFree.UseVisualStyleBackColor = true;
             // 
             // cbFavorite
             // 
@@ -288,29 +259,11 @@
             // lHide
             // 
             this.lHide.AutoSize = true;
-            this.lHide.Location = new System.Drawing.Point(21, 274);
+            this.lHide.Location = new System.Drawing.Point(21, 221);
             this.lHide.Name = "lHide";
             this.lHide.Size = new System.Drawing.Size(59, 13);
             this.lHide.TabIndex = 37;
             this.lHide.Text = "Verbergen:";
-            // 
-            // lGlutenFree
-            // 
-            this.lGlutenFree.AutoSize = true;
-            this.lGlutenFree.Location = new System.Drawing.Point(23, 250);
-            this.lGlutenFree.Name = "lGlutenFree";
-            this.lGlutenFree.Size = new System.Drawing.Size(57, 13);
-            this.lGlutenFree.TabIndex = 36;
-            this.lGlutenFree.Text = "Gluten vrij:";
-            // 
-            // lLactoseFree
-            // 
-            this.lLactoseFree.AutoSize = true;
-            this.lLactoseFree.Location = new System.Drawing.Point(16, 224);
-            this.lLactoseFree.Name = "lLactoseFree";
-            this.lLactoseFree.Size = new System.Drawing.Size(64, 13);
-            this.lLactoseFree.TabIndex = 35;
-            this.lLactoseFree.Text = "Lactose vrij:";
             // 
             // lFavorite
             // 
@@ -425,7 +378,7 @@
             this.tpIngredientEditor.Location = new System.Drawing.Point(4, 22);
             this.tpIngredientEditor.Name = "tpIngredientEditor";
             this.tpIngredientEditor.Padding = new System.Windows.Forms.Padding(3);
-            this.tpIngredientEditor.Size = new System.Drawing.Size(367, 319);
+            this.tpIngredientEditor.Size = new System.Drawing.Size(367, 277);
             this.tpIngredientEditor.TabIndex = 1;
             this.tpIngredientEditor.Text = "Ingredienten aanpassen";
             this.tpIngredientEditor.UseVisualStyleBackColor = true;
@@ -433,7 +386,7 @@
             // bDeleteIngredient
             // 
             this.bDeleteIngredient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.bDeleteIngredient.Location = new System.Drawing.Point(285, 272);
+            this.bDeleteIngredient.Location = new System.Drawing.Point(285, 248);
             this.bDeleteIngredient.Name = "bDeleteIngredient";
             this.bDeleteIngredient.Size = new System.Drawing.Size(75, 23);
             this.bDeleteIngredient.TabIndex = 49;
@@ -444,7 +397,7 @@
             // bNewIngredient
             // 
             this.bNewIngredient.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.bNewIngredient.Location = new System.Drawing.Point(10, 273);
+            this.bNewIngredient.Location = new System.Drawing.Point(7, 248);
             this.bNewIngredient.Name = "bNewIngredient";
             this.bNewIngredient.Size = new System.Drawing.Size(117, 23);
             this.bNewIngredient.TabIndex = 48;
@@ -460,7 +413,7 @@
             this.bSaveIngredient.Name = "bSaveIngredient";
             this.bSaveIngredient.Size = new System.Drawing.Size(75, 23);
             this.bSaveIngredient.TabIndex = 47;
-            this.bSaveIngredient.Text = "Opslaan";
+            this.bSaveIngredient.Text = "Wijzig";
             this.bSaveIngredient.UseVisualStyleBackColor = true;
             this.bSaveIngredient.Click += new System.EventHandler(this.bSaveIngredient_Click);
             // 
@@ -539,28 +492,79 @@
             this.lbIngredients.HorizontalScrollbar = true;
             this.lbIngredients.Location = new System.Drawing.Point(7, 30);
             this.lbIngredients.Name = "lbIngredients";
-            this.lbIngredients.Size = new System.Drawing.Size(120, 238);
+            this.lbIngredients.Size = new System.Drawing.Size(120, 212);
             this.lbIngredients.TabIndex = 0;
             this.lbIngredients.SelectedIndexChanged += new System.EventHandler(this.lbIngredients_SelectedIndexChanged);
             // 
-            // lRecipeTitle
+            // tabPage3
             // 
-            this.lRecipeTitle.AutoSize = true;
-            this.lRecipeTitle.Location = new System.Drawing.Point(249, 23);
-            this.lRecipeTitle.Name = "lRecipeTitle";
-            this.lRecipeTitle.Size = new System.Drawing.Size(0, 13);
-            this.lRecipeTitle.TabIndex = 3;
+            this.tabPage3.Controls.Add(this.bDeleteRecipeAllergie);
+            this.tabPage3.Controls.Add(this.bAddAllergieRecipe);
+            this.tabPage3.Controls.Add(this.cbbAllergy);
+            this.tabPage3.Controls.Add(this.label3);
+            this.tabPage3.Controls.Add(this.lbAllergiesRecipes);
+            this.tabPage3.Controls.Add(this.label2);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(367, 277);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Allergieën lijst";
+            this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // bNewRecipe
+            // bDeleteRecipeAllergie
             // 
-            this.bNewRecipe.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.bNewRecipe.Location = new System.Drawing.Point(11, 361);
-            this.bNewRecipe.Name = "bNewRecipe";
-            this.bNewRecipe.Size = new System.Drawing.Size(218, 23);
-            this.bNewRecipe.TabIndex = 49;
-            this.bNewRecipe.Text = "Nieuw";
-            this.bNewRecipe.UseVisualStyleBackColor = true;
-            this.bNewRecipe.Click += new System.EventHandler(this.bNewRecipe_Click);
+            this.bDeleteRecipeAllergie.Location = new System.Drawing.Point(192, 243);
+            this.bDeleteRecipeAllergie.Name = "bDeleteRecipeAllergie";
+            this.bDeleteRecipeAllergie.Size = new System.Drawing.Size(75, 23);
+            this.bDeleteRecipeAllergie.TabIndex = 5;
+            this.bDeleteRecipeAllergie.Text = "Verwijder";
+            this.bDeleteRecipeAllergie.UseVisualStyleBackColor = true;
+            this.bDeleteRecipeAllergie.Click += new System.EventHandler(this.bDeleteRecipeAllergie_Click);
+            // 
+            // bAddAllergieRecipe
+            // 
+            this.bAddAllergieRecipe.Location = new System.Drawing.Point(285, 56);
+            this.bAddAllergieRecipe.Name = "bAddAllergieRecipe";
+            this.bAddAllergieRecipe.Size = new System.Drawing.Size(75, 23);
+            this.bAddAllergieRecipe.TabIndex = 4;
+            this.bAddAllergieRecipe.Text = "Toevoegen";
+            this.bAddAllergieRecipe.UseVisualStyleBackColor = true;
+            this.bAddAllergieRecipe.Click += new System.EventHandler(this.bAddAllergieRecipe_Click);
+            // 
+            // cbbAllergy
+            // 
+            this.cbbAllergy.FormattingEnabled = true;
+            this.cbbAllergy.Location = new System.Drawing.Point(192, 28);
+            this.cbbAllergy.Name = "cbbAllergy";
+            this.cbbAllergy.Size = new System.Drawing.Size(169, 21);
+            this.cbbAllergy.TabIndex = 3;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(189, 11);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(41, 13);
+            this.label3.TabIndex = 2;
+            this.label3.Text = "Allergie";
+            // 
+            // lbAllergiesRecipes
+            // 
+            this.lbAllergiesRecipes.FormattingEnabled = true;
+            this.lbAllergiesRecipes.Location = new System.Drawing.Point(10, 28);
+            this.lbAllergiesRecipes.Name = "lbAllergiesRecipes";
+            this.lbAllergiesRecipes.Size = new System.Drawing.Size(168, 238);
+            this.lbAllergiesRecipes.TabIndex = 1;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(7, 11);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(53, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "Allergieën";
             // 
             // menuStrip1
             // 
@@ -569,7 +573,7 @@
             this.exporteerReceptenToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(629, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(636, 24);
             this.menuStrip1.TabIndex = 50;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -587,21 +591,136 @@
             this.exporteerReceptenToolStripMenuItem.Text = "Exporteer recepten";
             this.exporteerReceptenToolStripMenuItem.Click += new System.EventHandler(this.exporteerReceptenToolStripMenuItem_Click);
             // 
+            // tabControl1
+            // 
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(5, 27);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(624, 361);
+            this.tabControl1.TabIndex = 51;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.bNewRecipe);
+            this.tabPage1.Controls.Add(this.lRecipes);
+            this.tabPage1.Controls.Add(this.tcEditor);
+            this.tabPage1.Controls.Add(this.lbRecipes);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(616, 335);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Recepten";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // bNewRecipe
+            // 
+            this.bNewRecipe.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.bNewRecipe.Location = new System.Drawing.Point(7, 306);
+            this.bNewRecipe.Name = "bNewRecipe";
+            this.bNewRecipe.Size = new System.Drawing.Size(217, 23);
+            this.bNewRecipe.TabIndex = 52;
+            this.bNewRecipe.Text = "Nieuw";
+            this.bNewRecipe.UseVisualStyleBackColor = true;
+            this.bNewRecipe.Click += new System.EventHandler(this.bNewRecipe_Click);
+            // 
+            // lRecipes
+            // 
+            this.lRecipes.AutoSize = true;
+            this.lRecipes.Location = new System.Drawing.Point(7, 5);
+            this.lRecipes.Name = "lRecipes";
+            this.lRecipes.Size = new System.Drawing.Size(54, 13);
+            this.lRecipes.TabIndex = 51;
+            this.lRecipes.Text = "Recepten";
+            // 
+            // lbRecipes
+            // 
+            this.lbRecipes.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.lbRecipes.FormattingEnabled = true;
+            this.lbRecipes.HorizontalScrollbar = true;
+            this.lbRecipes.Location = new System.Drawing.Point(7, 24);
+            this.lbRecipes.Name = "lbRecipes";
+            this.lbRecipes.Size = new System.Drawing.Size(217, 277);
+            this.lbRecipes.TabIndex = 50;
+            this.lbRecipes.SelectedIndexChanged += new System.EventHandler(this.lbRecipes_SelectedIndexChanged);
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.bDeleteAllergy);
+            this.tabPage2.Controls.Add(this.bNewAllergy);
+            this.tabPage2.Controls.Add(this.label1);
+            this.tabPage2.Controls.Add(this.lbAllergies);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(616, 335);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Allergieën lijst";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // bDeleteAllergy
+            // 
+            this.bDeleteAllergy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.bDeleteAllergy.Location = new System.Drawing.Point(510, 292);
+            this.bDeleteAllergy.Name = "bDeleteAllergy";
+            this.bDeleteAllergy.Size = new System.Drawing.Size(100, 35);
+            this.bDeleteAllergy.TabIndex = 58;
+            this.bDeleteAllergy.Text = "Verwijder";
+            this.bDeleteAllergy.UseVisualStyleBackColor = true;
+            this.bDeleteAllergy.Click += new System.EventHandler(this.bDeleteAllergy_Click);
+            // 
+            // bNewAllergy
+            // 
+            this.bNewAllergy.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.bNewAllergy.Location = new System.Drawing.Point(510, 24);
+            this.bNewAllergy.Name = "bNewAllergy";
+            this.bNewAllergy.Size = new System.Drawing.Size(100, 35);
+            this.bNewAllergy.TabIndex = 57;
+            this.bNewAllergy.Text = "Nieuw";
+            this.bNewAllergy.UseVisualStyleBackColor = true;
+            this.bNewAllergy.Click += new System.EventHandler(this.bNewAllergy_Click);
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(7, 5);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(53, 13);
+            this.label1.TabIndex = 56;
+            this.label1.Text = "Allergieën";
+            // 
+            // lbAllergies
+            // 
+            this.lbAllergies.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.lbAllergies.FormattingEnabled = true;
+            this.lbAllergies.HorizontalScrollbar = true;
+            this.lbAllergies.Location = new System.Drawing.Point(7, 24);
+            this.lbAllergies.Name = "lbAllergies";
+            this.lbAllergies.Size = new System.Drawing.Size(497, 303);
+            this.lbAllergies.TabIndex = 55;
+            // 
             // RecipeFinderDatabase
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(629, 394);
-            this.Controls.Add(this.bNewRecipe);
-            this.Controls.Add(this.lRecipeTitle);
-            this.Controls.Add(this.tcEditor);
-            this.Controls.Add(this.lRecipes);
-            this.Controls.Add(this.lbRecipes);
+            this.ClientSize = new System.Drawing.Size(636, 396);
+            this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(700, 500);
+            this.MinimumSize = new System.Drawing.Size(652, 435);
             this.Name = "RecipeFinderDatabase";
-            this.Text = "RecipeFinderDatabase";
+            this.Text = "Recipe Finder Database";
             this.tcEditor.ResumeLayout(false);
             this.tpRecipeEditor.ResumeLayout(false);
             this.tpRecipeEditor.PerformLayout();
@@ -610,8 +729,15 @@
             ((System.ComponentModel.ISupportInitialize)(this.nudPage)).EndInit();
             this.tpIngredientEditor.ResumeLayout(false);
             this.tpIngredientEditor.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -619,24 +745,17 @@
 
         #endregion
 
-        private System.Windows.Forms.ListBox lbRecipes;
-        private System.Windows.Forms.Label lRecipes;
         private System.Windows.Forms.TabControl tcEditor;
         private System.Windows.Forms.TabPage tpRecipeEditor;
         private System.Windows.Forms.TabPage tpIngredientEditor;
-        private System.Windows.Forms.Label lRecipeTitle;
         private System.Windows.Forms.Button bSaveRecipe;
         private System.Windows.Forms.ComboBox cbbCourse;
         private System.Windows.Forms.CheckBox cbHide;
-        private System.Windows.Forms.CheckBox cbGlutenFree;
-        private System.Windows.Forms.CheckBox cbLacoseFree;
         private System.Windows.Forms.CheckBox cbFavorite;
         private System.Windows.Forms.NumericUpDown nudPersons;
         private System.Windows.Forms.NumericUpDown nudMaxPreperationTime;
         private System.Windows.Forms.NumericUpDown nudPage;
         private System.Windows.Forms.Label lHide;
-        private System.Windows.Forms.Label lGlutenFree;
-        private System.Windows.Forms.Label lLactoseFree;
         private System.Windows.Forms.Label lFavorite;
         private System.Windows.Forms.Label lPersons;
         private System.Windows.Forms.Label lMazPreperationTime;
@@ -659,12 +778,28 @@
         private System.Windows.Forms.Label lName;
         private System.Windows.Forms.Label lMinutes;
         private System.Windows.Forms.Button bNewIngredient;
-        private System.Windows.Forms.Button bNewRecipe;
         private System.Windows.Forms.Button bDeleteIngredient;
         private System.Windows.Forms.Button bDeleteRecipe;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem importeerReceptenToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem exporteerReceptenToolStripMenuItem;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.Button bNewRecipe;
+        private System.Windows.Forms.Label lRecipes;
+        private System.Windows.Forms.ListBox lbRecipes;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Button bDeleteAllergy;
+        private System.Windows.Forms.Button bNewAllergy;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.ListBox lbAllergies;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.Button bDeleteRecipeAllergie;
+        private System.Windows.Forms.Button bAddAllergieRecipe;
+        private System.Windows.Forms.ComboBox cbbAllergy;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.ListBox lbAllergiesRecipes;
+        private System.Windows.Forms.Label label2;
     }
 }
 

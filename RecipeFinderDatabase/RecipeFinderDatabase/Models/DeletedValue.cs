@@ -8,21 +8,46 @@ namespace RecipeFinderDatabase.Models
 {
     public class DeletedValue
     {
-        private int mRecipeIngredientId;
-        private bool mIsRecipe;
+        private int mObjectId;
+        private ObjectType mObjectType;
 
-        public DeletedValue(int recipeIngredientId, bool isRecipe) 
+        public DeletedValue(int objectId, ObjectType objectType) 
         {
-            mRecipeIngredientId = recipeIngredientId;
-            mIsRecipe = isRecipe;
+            mObjectId = objectId;
+            mObjectType = objectType;
         }
 
         public string GetDeleteQuery()
         {
-            if (mIsRecipe)
-                return "DELETE FROM recipes WHERE id = " + mRecipeIngredientId + ";";
-            else
-                return "DELETE FROM ingredients WHERE id = " + mRecipeIngredientId + ";";
+            string query = null;
+            switch(mObjectType)
+            {
+                case ObjectType.Recipe:
+                    query = "DELETE FROM recipes WHERE id = " + mObjectId + ";";
+                    break;
+
+                case ObjectType.Ingredient:
+                    query = "DELETE FROM ingredients WHERE id = " + mObjectId + ";";
+                    break;
+
+                case ObjectType.Allergy:
+                    query = "DELETE FROM allergies WHERE id = " + mObjectId + ";";
+                    break;
+
+                case ObjectType.RecipeAllergy:
+                    query = "DELETE FROM allergiesrecipes WHERE id = " + mObjectId + ";";
+                    break;
+            }
+
+            return query;
         }
+    }
+
+    public enum ObjectType
+    {
+        Recipe,
+        Ingredient,
+        Allergy,
+        RecipeAllergy
     }
 }

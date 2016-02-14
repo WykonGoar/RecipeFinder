@@ -83,8 +83,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseConnection.cs" />
+    <Compile Include="Models\AllergiesRecipes.cs" />
+    <Compile Include="Models\Allergy.cs" />
     <Compile Include="Models\DeletedValue.cs" />
     <Compile Include="Models\IORecipes.cs" />
+    <Compile Include="NewAllergy.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewAllergy.Designer.cs">
+      <DependentUpon>NewAllergy.cs</DependentUpon>
+    </Compile>
     <Compile Include="RecipeFinderDatabase.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,6 +115,9 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="NewAllergy.resx">
+      <DependentUpon>NewAllergy.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="RecipeFinderDatabase.resx">
       <DependentUpon>RecipeFinderDatabase.cs</DependentUpon>
     </EmbeddedResource>

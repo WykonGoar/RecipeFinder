@@ -102,20 +102,6 @@ namespace RecipeFinderDatabase
                     {
                         Recipe recipe = new Recipe();
 
-                        /*
-                        recipe.Id = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("id"));
-                        recipe.Book = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("book"));
-                        recipe.Page = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("page"));
-                        recipe.Kitchen = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("kitchen"));
-                        recipe.Course = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("course"));
-                        recipe.Title = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("title"));
-                        recipe.MaxPreperationTime = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("maxPreperationTime"));
-                        recipe.Persons = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("persons"));
-                        recipe.FavoriteInt = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("favorite"));
-                        recipe.LactoseFreeInt = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("lactosefree"));
-                        recipe.GlutenFreeInt = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("glutenfree"));
-                        recipe.HideInt = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("hide"));*/
-
                         recipe.Id = dataReader.GetInt32(dataReader.GetOrdinal("id"));
                         recipe.Book = dataReader.GetString(dataReader.GetOrdinal("book"));
                         recipe.Page = dataReader.GetInt32(dataReader.GetOrdinal("page"));
@@ -125,8 +111,6 @@ namespace RecipeFinderDatabase
                         recipe.MaxPreperationTime = dataReader.GetInt32(dataReader.GetOrdinal("maxPreperationTime"));
                         recipe.Persons = dataReader.GetInt32(dataReader.GetOrdinal("persons"));
                         recipe.FavoriteInt = dataReader.GetInt32(dataReader.GetOrdinal("favorite"));
-                        recipe.LactoseFreeInt = dataReader.GetInt32(dataReader.GetOrdinal("lactosefree"));
-                        recipe.GlutenFreeInt = dataReader.GetInt32(dataReader.GetOrdinal("glutenfree"));
                         recipe.HideInt = dataReader.GetInt32(dataReader.GetOrdinal("hide"));
                         
                         recipeList.Add(recipe);
@@ -150,6 +134,7 @@ namespace RecipeFinderDatabase
             foreach(Recipe recipe in recipeList)
             {
                 recipe.Ingredients = GetAllIngredients(recipe.Id);
+                recipe.Allergies = GetAllAllergiesFromRecipe(recipe.Id);
             }
 
             return recipeList;
@@ -185,15 +170,9 @@ namespace RecipeFinderDatabase
                     while (dataReader.Read())
                     {
                         Ingredient ingredient = new Ingredient();
-                        /*
-                        ingredient.Id = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("id"));
-                        ingredient.RecipeId = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("recipeID"));
-                        ingredient.Name = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("name"));
-                        ingredient.Amount = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("amount"));
-                        ingredient.Measure = mSqlDataReader.GetString(mSqlDataReader.GetOrdinal("measure")); */
-
+                        
                         ingredient.Id = dataReader.GetInt32(dataReader.GetOrdinal("id"));
-                        ingredient.RecipeId = dataReader.GetInt32(dataReader.GetOrdinal("recipeID"));
+                        ingredient.RecipeId = dataReader.GetInt32(dataReader.GetOrdinal("recipeId"));
                         ingredient.Name = dataReader.GetString(dataReader.GetOrdinal("name"));
                         ingredient.Amount = dataReader.GetString(dataReader.GetOrdinal("amount"));
                         ingredient.Measure = dataReader.GetString(dataReader.GetOrdinal("measure"));
@@ -217,6 +196,119 @@ namespace RecipeFinderDatabase
             }
 
             return ingredientList;
+        }
+
+        private List<AllergiesRecipes> GetAllAllergiesFromRecipe(int recipeId)
+        {
+            string query = "SELECT a.id, a.recipeId, a.allergyId, g.name FROM allergiesrecipes a RIGHT JOIN allergies g ON a.allergyId = g.id WHERE a.recipeId = @P0 ORDER BY g.name";
+            //SqlCommand mSqlCommand = new SqlCommand(query, mSqlConnection);
+            //mSqlCommand.Parameters.AddWithValue("P0", recipeId);
+
+            OleDbCommand command = new OleDbCommand(query, mConnection);
+            command.Parameters.AddWithValue("P0", recipeId);
+
+            //SqlDataReader mSqlDataReader = null;
+            OleDbDataReader dataReader = null;
+
+            List<AllergiesRecipes> allergyList = new List<AllergiesRecipes>();
+            try
+            {
+                //mSqlConnection.Open();
+                //mSqlDataReader = mSqlCommand.ExecuteReader();
+
+                mConnection.Open();
+                dataReader = command.ExecuteReader();
+
+                // Check is the reader has any rows at all before starting to read.
+                //if (mSqlDataReader.HasRows)
+                if (dataReader.HasRows)
+                {
+                    // Read advances to the next row.
+                    //while (mSqlDataReader.Read())
+                    while (dataReader.Read())
+                    {
+                        AllergiesRecipes allergy = new AllergiesRecipes();
+
+                        allergy.Id = dataReader.GetInt32(dataReader.GetOrdinal("id"));
+                        allergy.RecipeId = dataReader.GetInt32(dataReader.GetOrdinal("recipeId"));
+                        allergy.AllergyId = dataReader.GetInt32(dataReader.GetOrdinal("allergyId"));
+                        allergy.Name = dataReader.GetString(dataReader.GetOrdinal("name"));
+
+                        allergyList.Add(allergy);
+                    }
+                }
+            }
+            //catch (SqlException ex)
+            catch (OleDbException ex)
+            {
+                MessageBox.Show(ex.Message, "Error:" + ex.ErrorCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                //mSqlDataReader.Close();
+                //mSqlConnection.Close();
+
+                dataReader.Close();
+                mConnection.Close();
+            }
+
+            return allergyList;
+        }
+
+        public List<Allergy> GetAllAllergies()
+        {
+            string query = "SELECT * FROM allergies";
+            //SqlCommand mSqlCommand = new SqlCommand(query, mSqlConnection);
+
+            OleDbCommand command = new OleDbCommand(query, mConnection);
+
+            //SqlDataReader mSqlDataReader = null;
+            OleDbDataReader dataReader = null;
+
+            List<Allergy> allergyList = new List<Allergy>();
+            try
+            {
+                //mSqlConnection.Open();
+                //mSqlDataReader = mSqlCommand.ExecuteReader();
+
+                mConnection.Open();
+                dataReader = command.ExecuteReader();
+
+                // Check is the reader has any rows at all before starting to read.
+                //if (mSqlDataReader.HasRows)
+                if (dataReader.HasRows)
+                {
+                    // Read advances to the next row.
+                    //while (mSqlDataReader.Read())
+                    while (dataReader.Read())
+                    {
+                        Allergy allergy = new Allergy();
+
+                        int id = dataReader.GetInt32(dataReader.GetOrdinal("id"));
+                        string name = dataReader.GetString(dataReader.GetOrdinal("name"));
+
+                        allergy.Id = id;
+                        allergy.Name = name;
+
+                        allergyList.Add(allergy);
+                    }
+                }
+            }
+            //catch (SqlException ex)
+            catch (OleDbException ex)
+            {
+                MessageBox.Show(ex.Message, "Error:" + ex.ErrorCode, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            finally
+            {
+                //mSqlDataReader.Close();
+                //mSqlConnection.Close();
+
+                dataReader.Close();
+                mConnection.Close();
+            }
+
+            return allergyList;
         }
 
         public List<DeletedValue> GetAllDeletedValues()
@@ -249,14 +341,10 @@ namespace RecipeFinderDatabase
                         //int recipeIngredientId = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("recipeIngredientId"));
                         //int iIsRecipe = mSqlDataReader.GetInt32(mSqlDataReader.GetOrdinal("isRecipe"));
 
-                        int recipeIngredientId = dataReader.GetInt32(dataReader.GetOrdinal("recipeIngredientId"));
-                        int iIsRecipe = dataReader.GetInt32(dataReader.GetOrdinal("isRecipe"));
-
-                        bool isRecipe = true;
-                        if(iIsRecipe == 0)
-                            isRecipe = false;
-
-                        DeletedValue deletedValue = new DeletedValue(recipeIngredientId, isRecipe);
+                        int objectId = dataReader.GetInt32(dataReader.GetOrdinal("objectId"));
+                        ObjectType objectType = (ObjectType) dataReader.GetInt32(dataReader.GetOrdinal("objectType"));
+                        
+                        DeletedValue deletedValue = new DeletedValue(objectId, objectType);
 
                         deletedValueList.Add(deletedValue);
                     }

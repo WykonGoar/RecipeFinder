@@ -328,6 +328,8 @@
             this.Controls.Add(this.tbTitle);
             this.Controls.Add(this.lTitle);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+            this.MaximumSize = new System.Drawing.Size(384, 337);
+            this.MinimumSize = new System.Drawing.Size(384, 337);
             this.Name = "NewRecipe";
             this.Text = "Nieuw recept";
             ((System.ComponentModel.ISupportInitialize)(this.nudPersons)).EndInit();
