@@ -18,8 +18,8 @@ import android.widget.Toast;
 import com.wykon.recipefinder.R;
 import com.wykon.recipefinder.model.DatabaseConnection;
 import com.wykon.recipefinder.model.IORecipes;
-import com.wykon.recipefinder.model.NavigationItem;
-import com.wykon.recipefinder.model.NavigationListAdapter;
+import com.wykon.recipefinder.model.activitylists.NavigationItem;
+import com.wykon.recipefinder.model.activitylists.NavigationListAdapter;
 
 import java.util.ArrayList;
 

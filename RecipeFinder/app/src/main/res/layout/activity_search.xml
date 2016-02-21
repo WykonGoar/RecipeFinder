@@ -131,46 +131,6 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="5dp" >
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="0dip"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.5" >
-
-                            <TextView
-                                android:layout_width="0dip"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:textAppearance="@style/AppTextMedium"
-                                android:text="Lactose vrij" />
-
-                            <Spinner
-                                android:layout_width="0dip"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:id="@+id/cbbLactoseFree" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:orientation="horizontal"
-                            android:layout_width="0dip"
-                            android:layout_height="match_parent"
-                            android:layout_weight="0.5" >
-
-                            <TextView
-                                android:layout_width="0dip"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:textAppearance="@style/AppTextMedium"
-                                android:text="Gluten vrij" />
-
-                            <Spinner
-                                android:layout_width="0dip"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="0.5"
-                                android:id="@+id/cbbGlutenFree" />
-                        </LinearLayout>
                     </TableRow>
 
                 </TableLayout>
@@ -240,11 +200,25 @@
                         android:id="@+id/etMaxPersons" />
                 </LinearLayout>
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="@style/AppTextMedium"
+                    android:text="Allergievrij"
+                    android:id="@+id/textView" />
+
+                <ListView
+                    android:layout_width="match_parent"
+                    android:layout_height="130dp"
+                    android:nestedScrollingEnabled="true"
+                    android:id="@+id/lvAllergyFree"
+                    android:padding="10dp" />
+
                 <Button
                     android:id="@+id/bSearch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="bottom|center_horizontal"
                     android:text="@string/search"/>
             </LinearLayout>
         </ScrollView>

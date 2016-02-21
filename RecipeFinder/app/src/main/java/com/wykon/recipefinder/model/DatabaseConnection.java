@@ -7,6 +7,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 
 import com.wykon.recipefinder.R;
+import com.wykon.recipefinder.model.objects.Allergy;
+import com.wykon.recipefinder.model.objects.Ingredient;
+import com.wykon.recipefinder.model.objects.Recipe;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,18 +38,18 @@ public class DatabaseConnection extends Activity{
         } catch (SQLiteException ex)
         {
             importDatabaseTables();
-            //importRecipes();
+            importRecipes();
         }
 
     }
 
     private void importDatabaseTables(){
+        String line = null;
         try {
             InputStream mInputStream = mContext.getAssets().open("RecipeFinderTables.sql");
 
             BufferedReader mBufferedReader = new BufferedReader(new InputStreamReader(mInputStream));
 
-            String line = null;
             do {
                 line = mBufferedReader.readLine();
                 if (line != null) {
@@ -54,7 +57,7 @@ public class DatabaseConnection extends Activity{
                 }
             } while (line != null);
         }catch (IOException ex){
-            throw new Error(ex.getMessage());
+            throw new Error("message:" + ex.getMessage() + "line: " + line);
         }
     }
 
@@ -105,7 +108,7 @@ public class DatabaseConnection extends Activity{
 
         while(!mCursor.isAfterLast()){
             //Id
-            int id = mCursor.getInt(mCursor.getColumnIndex("_id"));
+            int id = mCursor.getInt(mCursor.getColumnIndex("id"));
             //book
             String book = mCursor.getString(mCursor.getColumnIndex("book"));
             //page
@@ -125,23 +128,13 @@ public class DatabaseConnection extends Activity{
             Boolean favorite = false;
             if(iFavorite == 1)
                 favorite = true;
-            //lactose free
-            int iLactoseFree = mCursor.getInt(mCursor.getColumnIndex("lactosefree"));
-            Boolean lactoseFree = false;
-            if(iLactoseFree == 1)
-                lactoseFree = true;
-            //gluten free
-            int iGlutenFree = mCursor.getInt(mCursor.getColumnIndex("glutenfree"));
-            Boolean glutenFree = false;
-            if(iGlutenFree == 1)
-                glutenFree = true;
             //hide
             int iHide = mCursor.getInt(mCursor.getColumnIndex("hide"));
             Boolean hide = false;
             if(iHide == 1)
                 hide = true;
 
-            Recipe mRecipe = new Recipe(id, book, page, kitchen, course, title, maxPreperationTime, persons, favorite, lactoseFree, glutenFree, hide);
+            Recipe mRecipe = new Recipe(id, book, page, kitchen, course, title, maxPreperationTime, persons, favorite, hide);
             mRecipes[recipeCount] = mRecipe;
             recipeCount ++;
             mCursor.moveToNext();
@@ -150,7 +143,7 @@ public class DatabaseConnection extends Activity{
         return  mRecipes;
     }
 
-    public Ingredient[] getIngredients(int recipeId)
+    public Ingredient[] getIngredientsOfRecipe(int recipeId)
     {
         String query = "SELECT * FROM ingredients WHERE recipeid = " + recipeId + " ORDER BY name";
         Cursor mCursor = null;
@@ -163,11 +156,11 @@ public class DatabaseConnection extends Activity{
 
         int rowCount = mCursor.getCount();
         Ingredient mIngredients[] = new Ingredient[rowCount];
-        int ingredientCount = 0;
+        int allergyCount = 0;
 
         while(!mCursor.isAfterLast()){
             //id
-            int id = mCursor.getInt(mCursor.getColumnIndex("_id"));
+            int id = mCursor.getInt(mCursor.getColumnIndex("id"));
             //recipeID
             int cRecipeId = mCursor.getInt(mCursor.getColumnIndex("recipeId"));
             //name
@@ -178,13 +171,75 @@ public class DatabaseConnection extends Activity{
             String measure = mCursor.getString(mCursor.getColumnIndex("measure"));
 
             Ingredient ingredient = new Ingredient(id, recipeId, name, amount, measure);
-            mIngredients[ingredientCount] = ingredient;
-            ingredientCount++;
+            mIngredients[allergyCount] = ingredient;
+            allergyCount++;
 
             mCursor.moveToNext();
         }
 
         return  mIngredients;
+    }
+
+    public Allergy[] getAllergiesOfRecipe(int recipeId)
+    {
+        String query = "SELECT a.* FROM allergies a INNER JOIN allergiesrecipes ar ON a.id = ar.allergyId WHERE ar.recipeId = " + recipeId + " ORDER BY name";
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        mCursor.moveToFirst();
+
+        int rowCount = mCursor.getCount();
+        Allergy mAllergies[] = new Allergy[rowCount];
+        int allergyCount = 0;
+
+        while(!mCursor.isAfterLast()){
+            //id
+            int id = mCursor.getInt(mCursor.getColumnIndex("id"));
+            //name
+            String name = mCursor.getString(mCursor.getColumnIndex("name"));
+
+            Allergy allergy = new Allergy(id, name);
+            mAllergies[allergyCount] = allergy;
+            allergyCount++;
+
+            mCursor.moveToNext();
+        }
+
+        return  mAllergies;
+    }
+
+    public Allergy[] getAllergies()
+    {
+        String query = "SELECT * FROM allergies";
+        Cursor mCursor = null;
+        try {
+            mCursor = executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+        mCursor.moveToFirst();
+
+        int rowCount = mCursor.getCount();
+        Allergy mAllergies[] = new Allergy[rowCount];
+        int allergyCount = 0;
+
+        while(!mCursor.isAfterLast()){
+            //id
+            int id = mCursor.getInt(mCursor.getColumnIndex("id"));
+            //name
+            String name = mCursor.getString(mCursor.getColumnIndex("name"));
+
+            Allergy allergy = new Allergy(id, name);
+            mAllergies[allergyCount] = allergy;
+            allergyCount++;
+
+            mCursor.moveToNext();
+        }
+
+        return  mAllergies;
     }
 
     public String[] getColumnSearchValues(String columnName){

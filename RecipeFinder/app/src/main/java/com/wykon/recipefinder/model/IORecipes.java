@@ -4,6 +4,9 @@ import android.content.Context;
 import android.database.sqlite.SQLiteException;
 import android.os.Environment;
 
+import com.wykon.recipefinder.model.objects.Ingredient;
+import com.wykon.recipefinder.model.objects.Recipe;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,7 +41,7 @@ public class IORecipes {
                 Recipe recipe = recipes[r];
                 mPrintStream.println(recipe.getUpdateQuery());
 
-                Ingredient[] ingredients = mDatabaseConnection.getIngredients(recipe.getId());
+                Ingredient[] ingredients = mDatabaseConnection.getIngredientsOfRecipe(recipe.getId());
                 for (int i = 0; i <recipes.length; i++)
                 {
                     Ingredient ingredient = ingredients[i];

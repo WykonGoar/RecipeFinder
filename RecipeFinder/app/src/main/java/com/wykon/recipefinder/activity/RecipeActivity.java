@@ -5,27 +5,44 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.TypedArray;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.wykon.recipefinder.R;
 import com.wykon.recipefinder.model.DatabaseConnection;
-import com.wykon.recipefinder.model.Ingredient;
-import com.wykon.recipefinder.model.IngredientAdapter;
-import com.wykon.recipefinder.model.Recipe;
+import com.wykon.recipefinder.model.activitylists.AllergyListAdapter;
+import com.wykon.recipefinder.model.objects.Allergy;
+import com.wykon.recipefinder.model.objects.Ingredient;
+import com.wykon.recipefinder.model.activitylists.IngredientListAdapter;
+import com.wykon.recipefinder.model.objects.Recipe;
 
 public class RecipeActivity extends DefaultActivity {
+    enum RecipeViews{
+        DETAILS,
+        ALLERGIES,
+        INGREDIENTS
+    }
 
     private String[] navigationMenuTitles;
     private TypedArray navigationMenuIcons;
     Recipe mRecipe = null;
 
     private DatabaseConnection mDatabaseConnection;
+
+    private Button bTabDetails;
+    private Button bTabAllergies;
+    private Button bTabIngredients;
+
+    private TableLayout tlDetails;
+    private ListView lvAllergies;
+    private ListView lvIngredients;
 
     private TextView tvTitle;
     private TextView tvBook;
@@ -34,8 +51,6 @@ public class RecipeActivity extends DefaultActivity {
     private TextView tvCourse;
     private TextView tvTime;
     private TextView tvPersons;
-    private CheckBox cbLactoseFree;
-    private CheckBox cbGlutenFree;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,14 +74,38 @@ public class RecipeActivity extends DefaultActivity {
         mRecipe = getRecipe(recipeId);
         loadRecipe();
 
-        Ingredient[] mIngredients = mDatabaseConnection.getIngredients(recipeId);
-
-        ListView lvIngredients = (ListView) findViewById(R.id.lvIngredients);
-        IngredientAdapter mIngredientAdapter = new IngredientAdapter(this, mIngredients);
+        Ingredient[] mIngredients = mDatabaseConnection.getIngredientsOfRecipe(recipeId);
+        IngredientListAdapter mIngredientAdapter = new IngredientListAdapter(this, mIngredients);
         lvIngredients.setAdapter(mIngredientAdapter);
+
+        Allergy[] mAllergies = mDatabaseConnection.getAllergiesOfRecipe(recipeId);
+        AllergyListAdapter mAllergyAdapter = new AllergyListAdapter(this, mAllergies);
+        lvAllergies.setAdapter(mAllergyAdapter);
     }
 
     private void initializeLayout() {
+        bTabDetails = (Button) findViewById(R.id.bTabDetails);
+        bTabDetails.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                switchView(RecipeViews.DETAILS);
+            }
+        });
+        bTabAllergies = (Button) findViewById(R.id.bTabAllergies);
+        bTabAllergies.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { switchView(RecipeViews.ALLERGIES);}
+        });
+        bTabIngredients = (Button) findViewById(R.id.bTabIngredients);
+        bTabIngredients.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { switchView(RecipeViews.INGREDIENTS);
+            } });
+
+        tlDetails = (TableLayout) findViewById(R.id.tlDetails);
+        lvAllergies = (ListView) findViewById(R.id.lvAllergies);
+        lvIngredients = (ListView) findViewById(R.id.lvIngredients);
+
         tvTitle = (TextView) findViewById(R.id.tvTitle);
         tvBook = (TextView) findViewById(R.id.tvBook);
         tvPage = (TextView) findViewById(R.id.tvPage);
@@ -74,20 +113,31 @@ public class RecipeActivity extends DefaultActivity {
         tvCourse = (TextView) findViewById(R.id.tvCourse);
         tvTime = (TextView) findViewById(R.id.tvTime);
         tvPersons = (TextView) findViewById(R.id.tvPersons);
-        cbLactoseFree = (CheckBox) findViewById(R.id.cbLactoseFree);
-        cbLactoseFree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                changeLactoseFree(isChecked);
-            }
-        });
-        cbGlutenFree = (CheckBox) findViewById(R.id.cbGlutenFree);
-        cbGlutenFree.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                changeGlutenFree(isChecked);
-            }
-        });
+    }
+
+    private void switchView(RecipeViews view){
+        bTabDetails.setBackgroundColor(Color.WHITE);
+        bTabAllergies.setBackgroundColor(Color.WHITE);
+        bTabIngredients.setBackgroundColor(Color.WHITE);
+
+        tlDetails.setVisibility(View.GONE);
+        lvAllergies.setVisibility(View.GONE);
+        lvIngredients.setVisibility(View.GONE);
+
+        switch (view){
+            case DETAILS:
+                bTabDetails.setBackgroundColor(Color.parseColor("#aaaaaa"));
+                tlDetails.setVisibility(View.VISIBLE);
+                break;
+            case ALLERGIES:
+                bTabAllergies.setBackgroundColor(Color.parseColor("#aaaaaa"));
+                lvAllergies.setVisibility(View.VISIBLE);
+                break;
+            case INGREDIENTS:
+                bTabIngredients.setBackgroundColor(Color.parseColor("#aaaaaa"));
+                lvIngredients.setVisibility(View.VISIBLE);
+                break;
+        }
     }
 
     private void loadRecipe() {
@@ -96,29 +146,8 @@ public class RecipeActivity extends DefaultActivity {
         tvPage.setText("" + mRecipe.getPage());
         tvKitchen.setText(mRecipe.getKitchen());
         tvCourse.setText(mRecipe.getCourse());
-        tvTime.setText("" + mRecipe.getPreperationTime());
+        tvTime.setText("" + mRecipe.getPreperationTime() + " minuten");
         tvPersons.setText("" + mRecipe.getPersons());
-
-        cbLactoseFree.setChecked(mRecipe.isLactoseFree());
-        cbGlutenFree.setChecked(mRecipe.isGlutenFree());
-    }
-
-    private void changeLactoseFree(boolean value) {
-        int iValue = 0;
-        if (value)
-            iValue = 1;
-
-        mDatabaseConnection.executeNonReturn("UPDATE recipes SET lactosefree = '" + iValue + "' WHERE _id = " + mRecipe.getId());
-        cbLactoseFree.setChecked(value);
-    }
-
-    private void changeGlutenFree(boolean value) {
-        int iValue = 0;
-        if (value)
-            iValue = 1;
-
-        mDatabaseConnection.executeNonReturn("UPDATE recipes SET glutenfree = '" + iValue + "' WHERE _id = " + mRecipe.getId());
-        cbGlutenFree.setChecked(value);
     }
 
     private void changeFavorite(boolean value) {
@@ -126,7 +155,7 @@ public class RecipeActivity extends DefaultActivity {
         if (value)
             iValue = 1;
 
-        mDatabaseConnection.executeNonReturn("UPDATE recipes SET favorite = '" + iValue + "' WHERE _id = " + mRecipe.getId());
+        mDatabaseConnection.executeNonReturn("UPDATE recipes SET favorite = '" + iValue + "' WHERE id = " + mRecipe.getId());
     }
 
     private void changeHide(boolean value) {
@@ -134,11 +163,11 @@ public class RecipeActivity extends DefaultActivity {
         if (value)
             iValue = 1;
 
-        mDatabaseConnection.executeNonReturn("UPDATE recipes SET hide = '" + iValue + "' WHERE _id = " + mRecipe.getId());
+        mDatabaseConnection.executeNonReturn("UPDATE recipes SET hide = '" + iValue + "' WHERE id = " + mRecipe.getId());
     }
 
     private Recipe getRecipe(int recipeId) {
-        Recipe[] recipes = mDatabaseConnection.loadRecipes("SELECT * FROM recipes WHERE _id = " + recipeId);
+        Recipe[] recipes = mDatabaseConnection.loadRecipes("SELECT * FROM recipes WHERE id = " + recipeId);
         Recipe mRecipe = null;
 
         if (recipes.length == 0)

@@ -1,4 +1,4 @@
-package com.wykon.recipefinder.model;
+package com.wykon.recipefinder.model.objects;
 
 import java.text.DecimalFormat;
 
@@ -12,12 +12,6 @@ public class Ingredient {
     private String mName;
     private double mAmount;
     private String mMeasure;
-
-    public Ingredient(String name, double amount, String measure) {
-        mName = name;
-        mAmount = amount;
-        mMeasure = measure;
-    }
 
     public Ingredient(int id, int recipeId, String name, double amount, String measure) {
         mId = id;

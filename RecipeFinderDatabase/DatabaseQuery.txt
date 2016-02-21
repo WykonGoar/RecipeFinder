@@ -49,8 +49,8 @@ CREATE TABLE [dbo].[allergiesrecipes] (
 
 CREATE TABLE [dbo].[deletedvalues] (
     [_id]                 INT IDENTITY (1, 1) NOT NULL,
-    [recipeIngredientId] INT NOT NULL,
-    [isRecipe]           INT NOT NULL,
+    [objectId] INT NOT NULL,
+    [objectType]           INT NOT NULL,
     PRIMARY KEY CLUSTERED ([Id] ASC)
 );
 

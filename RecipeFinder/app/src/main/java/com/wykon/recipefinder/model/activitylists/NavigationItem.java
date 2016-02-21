@@ -1,4 +1,4 @@
-package com.wykon.recipefinder.model;
+package com.wykon.recipefinder.model.activitylists;
 
 /**
  * Created by Wouter on 31-8-2015.

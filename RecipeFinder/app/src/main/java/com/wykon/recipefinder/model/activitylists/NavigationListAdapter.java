@@ -1,4 +1,4 @@
-package com.wykon.recipefinder.model;
+package com.wykon.recipefinder.model.activitylists;
 
 import android.app.Activity;
 import android.content.Context;
@@ -45,7 +45,7 @@ public class NavigationListAdapter extends BaseAdapter{
         if (convertView == null) {
             LayoutInflater mInflater = (LayoutInflater)
                     mContext.getSystemService(Activity.LAYOUT_INFLATER_SERVICE);
-            convertView = mInflater.inflate(R.layout.navigation_row, null);
+            convertView = mInflater.inflate(R.layout.row_navigation, null);
         }
 
         ImageView mImageView = (ImageView) convertView.findViewById(R.id.icon);

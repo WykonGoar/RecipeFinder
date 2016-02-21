@@ -23,8 +23,8 @@ import android.widget.TextView;
 
 import com.wykon.recipefinder.R;
 import com.wykon.recipefinder.model.DatabaseConnection;
-import com.wykon.recipefinder.model.Recipe;
-import com.wykon.recipefinder.model.RecipeListAdapter;
+import com.wykon.recipefinder.model.objects.Recipe;
+import com.wykon.recipefinder.model.activitylists.RecipeListAdapter;
 
 /**
  * Created by Wouter on 13-9-2015.
@@ -163,7 +163,7 @@ public class HiddenRecipeList extends DefaultActivity{
             isSearchOpen = false;
         } else {
             actionBar.setDisplayShowCustomEnabled(true);
-            actionBar.setCustomView(R.layout.search_bar);
+            actionBar.setCustomView(R.layout.bar_search);
             actionBar.setDisplayShowTitleEnabled(false);
 
             mSearchText = (EditText) actionBar.getCustomView().findViewById(R.id.etSearch);
@@ -192,7 +192,7 @@ public class HiddenRecipeList extends DefaultActivity{
     private void handleMenuOrderBy() {
         final Dialog dialog = new Dialog(this);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.oderby_dialog);
+        dialog.setContentView(R.layout.dialog_oderby);
         final RadioButton rbTitle = (RadioButton) dialog.findViewById(R.id.radioTitle);
         final RadioButton rbKitchen = (RadioButton) dialog.findViewById(R.id.radioKitchen);
         final RadioButton rbCourse = (RadioButton) dialog.findViewById(R.id.radioCourse);

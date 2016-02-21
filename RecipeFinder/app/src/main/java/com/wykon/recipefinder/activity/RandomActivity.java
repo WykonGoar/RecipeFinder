@@ -6,17 +6,24 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.wykon.recipefinder.R;
 import com.wykon.recipefinder.model.DatabaseConnection;
+import com.wykon.recipefinder.model.activitylists.AllergyFreeListAdapter;
+import com.wykon.recipefinder.model.objects.Allergy;
+import com.wykon.recipefinder.model.objects.AllergyFree;
 
 import java.util.Random;
 
@@ -37,9 +44,11 @@ public class RandomActivity extends DefaultActivity  {
     private EditText etMaxPersons;
     private EditText etMinTime;
     private EditText etMaxTime;
-    private Spinner cbbLactoseFree;
-    private Spinner cbbGlutenFree;
     private Spinner cbbFavorite;
+
+    private ListView lvAllergiesfree;
+
+    private AllergyFree[] mAllergiesFree;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +64,17 @@ public class RandomActivity extends DefaultActivity  {
 
         initializeLayout();
         fillSpinners();
+
+        Allergy[] mAllergies = mDatabaseConnection.getAllergies();
+        AllergyFreeListAdapter mAllergyFreeListAdapter = new AllergyFreeListAdapter(this, mAllergies);
+        lvAllergiesfree.setAdapter(mAllergyFreeListAdapter);
+
+        mAllergiesFree = new AllergyFree[mAllergies.length];
+        for(int i = 0; i<= mAllergies.length -1; i++)
+        {
+            AllergyFree mAllergyFree = new AllergyFree(mAllergies[i]);
+            mAllergiesFree[i] = mAllergyFree;
+        }
     }
 
     private void initializeLayout(){
@@ -65,9 +85,24 @@ public class RandomActivity extends DefaultActivity  {
         etMaxPersons = (EditText) findViewById(R.id.etMaxPersons);
         etMinTime = (EditText) findViewById(R.id.etMinTime);
         etMaxTime = (EditText) findViewById(R.id.etMaxTime);
-        cbbLactoseFree = (Spinner) findViewById(R.id.cbbLactoseFree);
-        cbbGlutenFree = (Spinner) findViewById(R.id.cbbGlutenFree);
         cbbFavorite = (Spinner) findViewById(R.id.cbbFavorite);
+
+        lvAllergiesfree = (ListView) findViewById(R.id.lvAllergyFree);
+        lvAllergiesfree.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ImageView ivCheckbox = (ImageView) view.findViewById(R.id.ivCheckboxFree);
+
+                AllergyFree allergy = mAllergiesFree[position];
+                if (allergy.isFree()) {
+                    allergy.setFree(false);
+                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_000);
+                } else {
+                    allergy.setFree(true);
+                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_015);
+                }
+            }
+        });
 
         Button bSearch = (Button) findViewById(R.id.bSearch);
         bSearch.setOnClickListener(new View.OnClickListener() {
@@ -100,8 +135,6 @@ public class RandomActivity extends DefaultActivity  {
         allYesNoArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         cbbFavorite.setAdapter(allYesNoArrayAdapter);
-        cbbLactoseFree.setAdapter(allYesNoArrayAdapter);
-        cbbGlutenFree.setAdapter(allYesNoArrayAdapter);
     }
 
     @Override
@@ -121,8 +154,24 @@ public class RandomActivity extends DefaultActivity  {
         return super.onOptionsItemSelected(item);
     }
 
+    private String getAllergyFreeList(){
+        String result = "";
+
+        for(AllergyFree allergy : mAllergiesFree)
+        {
+            if(allergy.isFree())
+                result += ", " + allergy.getId();
+        }
+
+        if(!result.isEmpty()){
+            return result.substring(1);
+        }
+
+        return null;
+    }
+
     private void activateSearch(){
-        String query = "SELECT _id FROM recipes WHERE hide = 0";
+        String query = "SELECT id FROM recipes WHERE hide = 0";
 
         String whereStatement = "";
         String allValue = getResources().getString(R.string.cbbAllValue);
@@ -146,24 +195,6 @@ public class RandomActivity extends DefaultActivity  {
         if(!favorite.equals(yesNoAwnser[0])) {
             whereStatement += " AND favorite =";
             if (favorite.equals(yesNoAwnser[1]))
-                whereStatement += 1;
-            else
-                whereStatement += 0;
-        }
-
-        String lactoseFree = cbbLactoseFree.getSelectedItem().toString();
-        if(!lactoseFree.equals(yesNoAwnser[0])) {
-            whereStatement += " AND lactosefree =";
-            if (lactoseFree.equals(yesNoAwnser[1]))
-                whereStatement += 1;
-            else
-                whereStatement += 0;
-        }
-
-        String glutenFree = cbbGlutenFree.getSelectedItem().toString();
-        if(!glutenFree.equals(yesNoAwnser[0])) {
-            whereStatement += " AND glutenfree =";
-            if (glutenFree.equals(yesNoAwnser[1]))
                 whereStatement += 1;
             else
                 whereStatement += 0;
@@ -203,6 +234,12 @@ public class RandomActivity extends DefaultActivity  {
             }
         }
 
+        String freeList = getAllergyFreeList();
+        if(freeList != null)
+        {
+            whereStatement += " AND id NOT IN (SELECT recipeId FROM allergiesrecipes WHERE allergyId IN(" + freeList +"))";
+        }
+
         query += whereStatement;
 
         Cursor mCursor = null;
@@ -214,16 +251,20 @@ public class RandomActivity extends DefaultActivity  {
 
         mCursor.moveToFirst();
 
+        Random random = new Random();
+        int randomNumber = 0;
         int rowCount = mCursor.getCount();
         if(rowCount == 0){
             Toast.makeText(this, "Geen recepten gevonden.", Toast.LENGTH_LONG).show();
             return;
         }
+        else if(rowCount == 1){
+            randomNumber = 0;
+        }
+        else {
+            mCursor.moveToPosition(randomNumber);
+        }
 
-        Random random = new Random();
-        int randomNumber = random.nextInt(rowCount - 1);
-
-        mCursor.moveToPosition(randomNumber);
         int recipeId = mCursor.getInt(0);
 
         Intent mIntent = new Intent(getApplicationContext(), RecipeActivity.class);

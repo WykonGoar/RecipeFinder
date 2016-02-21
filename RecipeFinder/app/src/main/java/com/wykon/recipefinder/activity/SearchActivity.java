@@ -1,20 +1,34 @@
 package com.wykon.recipefinder.activity;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.TypedArray;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.wykon.recipefinder.R;
 import com.wykon.recipefinder.model.DatabaseConnection;
+import com.wykon.recipefinder.model.activitylists.AllergyFreeListAdapter;
+import com.wykon.recipefinder.model.objects.Allergy;
+import com.wykon.recipefinder.model.objects.AllergyFree;
+
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Created by Wouter on 14-9-2015.
@@ -34,9 +48,12 @@ public class SearchActivity extends DefaultActivity  {
     private EditText etMaxPersons;
     private EditText etMinTime;
     private EditText etMaxTime;
-    private Spinner cbbLactoseFree;
-    private Spinner cbbGlutenFree;
     private Spinner cbbFavorite;
+    private ListView lvAllergiesfree;
+
+    private AllergyFree[] mAllergiesFree;
+
+    private Context context = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +69,17 @@ public class SearchActivity extends DefaultActivity  {
 
         initializeLayout();
         fillSpinners();
+
+        Allergy[] mAllergies = mDatabaseConnection.getAllergies();
+        AllergyFreeListAdapter mAllergyFreeListAdapter = new AllergyFreeListAdapter(this, mAllergies);
+        lvAllergiesfree.setAdapter(mAllergyFreeListAdapter);
+
+        mAllergiesFree = new AllergyFree[mAllergies.length];
+        for(int i = 0; i<= mAllergies.length -1; i++)
+        {
+            AllergyFree mAllergyFree = new AllergyFree(mAllergies[i]);
+            mAllergiesFree[i] = mAllergyFree;
+        }
     }
 
     private void initializeLayout(){
@@ -63,9 +91,25 @@ public class SearchActivity extends DefaultActivity  {
         etMaxPersons = (EditText) findViewById(R.id.etMaxPersons);
         etMinTime = (EditText) findViewById(R.id.etMinTime);
         etMaxTime = (EditText) findViewById(R.id.etMaxTime);
-        cbbLactoseFree = (Spinner) findViewById(R.id.cbbLactoseFree);
-        cbbGlutenFree = (Spinner) findViewById(R.id.cbbGlutenFree);
         cbbFavorite = (Spinner) findViewById(R.id.cbbFavorite);
+
+        lvAllergiesfree = (ListView) findViewById(R.id.lvAllergyFree);
+        lvAllergiesfree.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ImageView ivCheckbox = (ImageView) view.findViewById(R.id.ivCheckboxFree);
+
+                AllergyFree allergy = mAllergiesFree[position];
+                if(allergy.isFree()) {
+                    allergy.setFree(false);
+                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_000);
+                }
+                else{
+                    allergy.setFree(true);
+                    ivCheckbox.setImageResource(R.drawable.abc_btn_check_to_on_mtrl_015);
+                }
+            }
+        });
 
         Button bSearch = (Button) findViewById(R.id.bSearch);
         bSearch.setOnClickListener(new View.OnClickListener() {
@@ -98,8 +142,6 @@ public class SearchActivity extends DefaultActivity  {
         allYesNoArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 
         cbbFavorite.setAdapter(allYesNoArrayAdapter);
-        cbbLactoseFree.setAdapter(allYesNoArrayAdapter);
-        cbbGlutenFree.setAdapter(allYesNoArrayAdapter);
     }
 
     @Override
@@ -115,8 +157,23 @@ public class SearchActivity extends DefaultActivity  {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
 
-
         return super.onOptionsItemSelected(item);
+    }
+
+    private String getAllergyFreeList(){
+        String result = "";
+
+        for(AllergyFree allergy : mAllergiesFree)
+        {
+            if(allergy.isFree())
+                result += ", " + allergy.getId();
+        }
+
+        if(!result.isEmpty()){
+            return result.substring(1);
+        }
+
+        return null;
     }
 
     private void activateSearch(){
@@ -144,24 +201,6 @@ public class SearchActivity extends DefaultActivity  {
         if(!favorite.equals(yesNoAwnser[0])) {
             whereStatement += " AND favorite =";
             if (favorite.equals(yesNoAwnser[1]))
-                whereStatement += 1;
-            else
-                whereStatement += 0;
-        }
-
-        String lactoseFree = cbbLactoseFree.getSelectedItem().toString();
-        if(!lactoseFree.equals(yesNoAwnser[0])) {
-            whereStatement += " AND lactosefree =";
-            if (lactoseFree.equals(yesNoAwnser[1]))
-                whereStatement += 1;
-            else
-                whereStatement += 0;
-        }
-
-        String glutenFree = cbbGlutenFree.getSelectedItem().toString();
-        if(!glutenFree.equals(yesNoAwnser[0])) {
-            whereStatement += " AND glutenfree =";
-            if (glutenFree.equals(yesNoAwnser[1]))
                 whereStatement += 1;
             else
                 whereStatement += 0;
@@ -201,11 +240,32 @@ public class SearchActivity extends DefaultActivity  {
             }
         }
 
+        String freeList = getAllergyFreeList();
+        if(freeList != null)
+        {
+            whereStatement += " AND id NOT IN (SELECT recipeId FROM allergiesrecipes WHERE allergyId IN(" + freeList +"))";
+        }
+
         String searchText = etSearch.getText().toString();
         if(!searchText.isEmpty())
             whereStatement += " AND title LIKE '%" + searchText + "%'";
 
         query += whereStatement;
+
+        Cursor mCursor = null;
+        try {
+            mCursor = mDatabaseConnection.executeReturn(query);
+        } catch (SQLiteException e) {
+            e.printStackTrace();
+        }
+
+        mCursor.moveToFirst();
+
+        int rowCount = mCursor.getCount();
+        if(rowCount == 0){
+            Toast.makeText(this, "Geen recepten gevonden.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
         Intent mIntent = new Intent(getApplicationContext(), ResultListActivity.class);
         mIntent.putExtra("query", query);
